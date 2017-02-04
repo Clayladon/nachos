@@ -193,6 +193,17 @@ public class KThread {
 
 
 	currentThread.status = statusFinished;
+
+	//Unjoining & Waking the joined threads
+	Lib.assertTrue(currentThread == this);
+
+	KThread threadToBeAwoken;	
+
+	while((threadToBeAwoken = threadsToBeJoined.nextThread()) != null){
+		
+		if(threadToBeAwoken.status != statusReady)
+			threadToBeAwoken.ready();
+	}
 	
 	sleep();
     }
