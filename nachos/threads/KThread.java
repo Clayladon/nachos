@@ -273,10 +273,24 @@ public class KThread {
      * thread.
      */
     public void join() {
-	Lib.debug(dbgThread, "Joining to thread: " + toString());
 
-	Lib.assertTrue(this != currentThread);
+		if(status == statusFinished)
+			Lib.debug(dbgThread, "Should not join to a finished thread. Thread: " + toString());
+			
+		else{
+			Lib.assertTrue(this != currentThread);
+			Lib.debug(dbgThread, "Joining to thread: " + toString());
 
+			boolean interruptStatus = Machine.interrupt().disable();
+			
+			if(status == statusNew)
+				ready();
+			threadsToBeJoined.waitForAccess(currentThread);
+			sleep();
+
+			Machine.interrupt().restore(interruptStatus);
+
+		}
     }
 
     /**
@@ -407,6 +421,7 @@ public class KThread {
 	new PingTest(0).run();
     }
 
+	
     private static final char dbgThread = 't';
 
     /**
@@ -444,4 +459,6 @@ public class KThread {
     private static KThread currentThread = null;
     private static KThread toBeDestroyed = null;
     private static KThread idleThread = null;
+
+	private ThreadQueue threadsToBeJoined = ThreadedKernel.scheduler.newThreadQueue(true);
 }
