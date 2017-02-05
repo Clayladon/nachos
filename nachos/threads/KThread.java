@@ -426,28 +426,31 @@ public class KThread {
      * Tests whether this module is working.
      */
     public static void selfTest() {
-	Lib.debug(dbgThread, "Enter KThread.selfTest");
+		Lib.debug(dbgThread, "Enter KThread.selfTest");
 	
-	//new KThread(new PingTest(1)).setName("forked thread").fork();
-	//new PingTest(0).run();
+		new KThread(new PingTest(1)).setName("forked thread").fork();
+		new PingTest(0).run();
 	
-	//TODO===================vvvvvvvvvvvvvvvvvvvvv========================
+		//BEGIN self join test
 	
-	
-		KThread lonelyThread = new KThread(new PingTest(3)).setName("first thread");
-	
-		lonelyThread.fork(); //The lonley thread did indeed, fork itself.
+		KThread thread = new KThread();
+		thread.setTarget(new Runnable() {
+			public void run(){
+				String result = "Self join test failed.";
+				
+				try{
+					thread.join();
+				}
+				catch (Error e){
+					result = "Self join test completed.";
+				}
+				
+				System.out.println("\n" + result);
+			}
+		});
+		thread.fork();
 		
-		System.out.println("About to join...");
-		lonelyThread.join();
-		System.out.println("Join complete!");
-	
-		//new PingTest(5).run();
-		
-		System.out.println("Exit KThread.selfTest");
-		
-	
-	 //TODO===================^^^^^^^^^^^^^^^^^^^^^========================
+		//END self join test
     }
 
 	
