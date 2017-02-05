@@ -195,7 +195,7 @@ public class KThread {
 	currentThread.status = statusFinished;
 
 	//Unjoining & Waking the joined threads
-	Lib.assertTrue(currentThread == this);
+	//Lib.assertTrue(currentThread == this);
 
 	KThread threadToBeAwoken;	
 
@@ -428,8 +428,26 @@ public class KThread {
     public static void selfTest() {
 	Lib.debug(dbgThread, "Enter KThread.selfTest");
 	
-	new KThread(new PingTest(1)).setName("forked thread").fork();
-	new PingTest(0).run();
+	//new KThread(new PingTest(1)).setName("forked thread").fork();
+	//new PingTest(0).run();
+	
+	//TODO===================vvvvvvvvvvvvvvvvvvvvv========================
+	
+	
+		KThread lonelyThread = new KThread(new PingTest(3)).setName("first thread");
+	
+		lonelyThread.fork(); //The lonley thread did indeed, fork itself.
+		
+		System.out.println("About to join...");
+		lonelyThread.join();
+		System.out.println("Join complete!");
+	
+		//new PingTest(5).run();
+		
+		System.out.println("Exit KThread.selfTest");
+		
+	
+	 //TODO===================^^^^^^^^^^^^^^^^^^^^^========================
     }
 
 	
@@ -471,5 +489,5 @@ public class KThread {
     private static KThread toBeDestroyed = null;
     private static KThread idleThread = null;
 
-	private ThreadQueue threadsToBeJoined = ThreadedKernel.scheduler.newThreadQueue(true);
+	private static ThreadQueue threadsToBeJoined = ThreadedKernel.scheduler.newThreadQueue(true);
 }
