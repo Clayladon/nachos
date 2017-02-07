@@ -432,9 +432,16 @@ public class KThread {
 		new PingTest(0).run();
 	
 		selfJoinTest();
+		//cyclicalJoinTest();
 		
     }
+    
+    /**
+    *TODO Javadocs
+    *
+    */
     private static void selfJoinTest(){
+    	System.out.println("Enter KThread.selfJoinTest()");
     	KThread thread = new KThread();
 		thread.setTarget(new Runnable() {
 			public void run(){
@@ -444,13 +451,76 @@ public class KThread {
 					thread.join();
 				}
 				catch (Error e){
-					result = "Self join test completed.";
+					result = "Self join test passed.";
 				}
 				
 				System.out.println("=======================> " + result);
 			}
 		});
 		thread.fork();
+		
+    	System.out.println("Exit KThread.selfJoinTest()");
+    }
+    
+    /**
+    *TODO Javadocs
+    *
+    */
+    private static void cyclicalJoinTest(){
+    	System.out.println("Enter KThread.cyclicalJoinTest()");
+    	KThread thread1 = new KThread();
+    	KThread thread2 = new KThread();
+    	KThread thread3 = new KThread();
+    	
+    	thread1.setTarget(new Runnable() {
+			public void run(){
+				String result = "thread 1 joined thread 2.";
+				
+				try{
+					thread2.join();
+				}
+				catch (Error e){
+					result = "thread 1 failed to join thread 2.";
+				}
+				
+				System.out.println("=======================> " + result);
+			}
+		});
+		
+		thread2.setTarget(new Runnable() {
+			public void run(){
+				String result = "thread 2 joined thread 3.";
+				
+				try{
+					thread3.join();
+				}
+				catch (Error e){
+					result = "thread 2 failed to join thread 3.";
+				}
+				
+				System.out.println("=======================> " + result);
+			}
+		});
+    	
+    	thread3.setTarget(new Runnable() {
+			public void run(){
+				String result = "thread 3 joined thread 1.";
+				
+				try{
+					thread1.join();
+				}
+				catch (Error e){
+					result = "thread 3 failed to join thread 1.";
+				}
+				
+				System.out.println("=======================> " + result);
+			}
+		});
+    	
+    	thread1.fork();
+    	thread1.join();
+    	
+    	System.out.println("Exit KThread.cyclicalJoinTest()");
     }
 
 	
