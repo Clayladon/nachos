@@ -431,9 +431,11 @@ public class KThread {
 		new KThread(new PingTest(1)).setName("forked thread").fork();
 		new PingTest(0).run();
 	
-		//BEGIN self join test
-	
-		KThread thread = new KThread();
+		selfJoinTest();
+		
+    }
+    private static void selfJoinTest(){
+    	KThread thread = new KThread();
 		thread.setTarget(new Runnable() {
 			public void run(){
 				String result = "Self join test failed.";
@@ -445,12 +447,10 @@ public class KThread {
 					result = "Self join test completed.";
 				}
 				
-				System.out.println("\n" + result);
+				System.out.println("=======================> " + result);
 			}
 		});
 		thread.fork();
-		
-		//END self join test
     }
 
 	
