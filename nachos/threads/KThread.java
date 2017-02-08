@@ -182,30 +182,29 @@ public class KThread {
      * delete this thread.
      */
     public static void finish() {
-	Lib.debug(dbgThread, "Finishing thread: " + currentThread.toString());
+		Lib.debug(dbgThread, "Finishing thread: " + currentThread.toString());
 	
-	Machine.interrupt().disable();
+		Machine.interrupt().disable();
 
-	Machine.autoGrader().finishingCurrentThread();
+		Machine.autoGrader().finishingCurrentThread();
 
-	Lib.assertTrue(toBeDestroyed == null);
-	toBeDestroyed = currentThread;
+		Lib.assertTrue(toBeDestroyed == null);
+		toBeDestroyed = currentThread;
 
 
-	currentThread.status = statusFinished;
+		currentThread.status = statusFinished;
 
-	//Unjoining & Waking the joined threads
-	//Lib.assertTrue(currentThread == this);
+		//Unjoining & Waking the joined threads
+		//Lib.assertTrue(currentThread == this);
 
-	KThread threadToBeAwoken;	
+		KThread threadToBeAwoken;	
 
-	while((threadToBeAwoken = threadsToBeJoined.nextThread()) != null){
+		while((threadToBeAwoken = threadsToBeJoined.nextThread()) != null){
 		
-		if(threadToBeAwoken.status != statusReady)
-			threadToBeAwoken.ready();
-	}
-	
-	sleep();
+			if(threadToBeAwoken.status != statusReady)
+				threadToBeAwoken.ready();
+		}
+		sleep();
     }
 
     /**
@@ -284,6 +283,8 @@ public class KThread {
      * thread.
      */
     public void join() {
+    	//TODO remove vvvv
+    	System.out.println("====Enter " + this.name +"'s KThread.join()");
 
 		if(status == statusFinished)
 			Lib.debug(dbgThread, "Should not join to a finished thread. Thread: " + toString());
@@ -293,15 +294,40 @@ public class KThread {
 			Lib.debug(dbgThread, "Joining to thread: " + toString());
 
 			boolean interruptStatus = Machine.interrupt().disable();
+
+			boolean isInThreadQueue = false;
 			
-			if(status == statusNew)
-				ready();
-			threadsToBeJoined.waitForAccess(currentThread);
-			sleep();
+			ThreadQueue copyQueue = threadsToBeJoined;
+			copyQueue.print();
+			
+			KThread link = copyQueue.nextThread();
+			while(link != null){
+				System.out.println("======Enter " + this.name +"'s KThread.join() while loop");
+				if (this == link){
+					isInThreadQueue = true;
+					break;
+				}
+				link = copyQueue.nextThread();
+			}
+			System.out.println("======Completed " + this.name +"'s KThread.join() while loop");
+					
+			if(!isInThreadQueue){
+				if(status == statusNew)
+					ready();
+				threadsToBeJoined.waitForAccess(currentThread);
+				System.out.println("========About to cause " + this.name + " to sleep");
+				sleep();
+				System.out.println("========" + this.name + " woke up!");
 
-			Machine.interrupt().restore(interruptStatus);
-
+				Machine.interrupt().restore(interruptStatus);
+			}
+			else
+				System.out.println("ERROR: Joining to method that is already joined.");
 		}
+		
+    	//TODO remove vvvv
+    	System.out.println("====Exit " + this.name +"'s KThread.join()");
+
     }
 
     /**
@@ -431,8 +457,8 @@ public class KThread {
 		new KThread(new PingTest(1)).setName("forked thread").fork();
 		new PingTest(0).run();
 	
-		selfJoinTest();
-		//cyclicalJoinTest();
+		//selfJoinTest();
+		cyclicalJoinTest();
 		
     }
     
@@ -469,8 +495,11 @@ public class KThread {
     private static void cyclicalJoinTest(){
     	System.out.println("Enter KThread.cyclicalJoinTest()");
     	KThread thread1 = new KThread();
+    	thread1.setName("thread 1");
     	KThread thread2 = new KThread();
+    	thread2.setName("thread 2");
     	KThread thread3 = new KThread();
+    	thread3.setName("thread 3");
     	
     	thread1.setTarget(new Runnable() {
 			public void run(){
@@ -519,6 +548,8 @@ public class KThread {
     	
     	thread1.fork();
     	thread1.join();
+    	thread2.join();
+    	thread3.join();
     	
     	System.out.println("Exit KThread.cyclicalJoinTest()");
     }
