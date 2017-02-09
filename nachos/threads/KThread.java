@@ -184,6 +184,7 @@ public class KThread {
     public static void finish() {
 		Lib.debug(dbgThread, "Finishing thread: " + currentThread.toString());
 	
+		hasJoined = false;
 		Machine.interrupt().disable();
 
 		Machine.autoGrader().finishingCurrentThread();
@@ -288,43 +289,26 @@ public class KThread {
 
 		if(status == statusFinished)
 			System.out.println("Should not join to a finished thread. Thread: " + toString());
+		
 		else if(hasJoined){
-			System.out.println("Should not join a thread that has joined another thread. To prevent potential cyclical joining.");
+			System.out.println("Should not join a thread that has joined another" 
+				+ " thread to prevent potential cyclical joining. Thread: " + toString());
 		}	
 		else{
 			Lib.assertTrue(this != currentThread);
 			Lib.debug(dbgThread, "Joining to thread: " + toString());
+			
 			hasJoined = true;
 			boolean interruptStatus = Machine.interrupt().disable();
+		
+			if(status == statusNew)
+				ready();
+			threadsToBeJoined.waitForAccess(currentThread);
+			System.out.println("========About to cause " + this.name + " to sleep");
+			sleep();
+			System.out.println("========" + this.name + " woke up!");
 
-			boolean isInThreadQueue = false;
-			
-			ThreadQueue copyQueue = threadsToBeJoined;
-			copyQueue.print();
-			
-			KThread link = copyQueue.nextThread();
-			while(link != null){
-				System.out.println("======Enter " + this.name +"'s KThread.join() while loop");
-				if (this == link){
-					isInThreadQueue = true;
-					break;
-				}
-				link = copyQueue.nextThread();
-			}
-			System.out.println("======Completed " + this.name +"'s KThread.join() while loop");
-					
-			if(!isInThreadQueue){
-				if(status == statusNew)
-					ready();
-				threadsToBeJoined.waitForAccess(currentThread);
-				System.out.println("========About to cause " + this.name + " to sleep");
-				sleep();
-				System.out.println("========" + this.name + " woke up!");
-
-				Machine.interrupt().restore(interruptStatus);
-			}
-			else
-				System.out.println("ERROR: Joining to method that is already joined.");
+			Machine.interrupt().restore(interruptStatus);
 		}
 		
     	//TODO remove vvvv
@@ -576,9 +560,8 @@ public class KThread {
 		});
     	
     	thread1.fork();
-    	thread1.join();
-    	thread2.join();
-    	thread3.join();
+    	thread2.fork();
+    	thread3.fork();
     	
     	System.out.println("Exit KThread.cyclicalJoinTest()");
     }
