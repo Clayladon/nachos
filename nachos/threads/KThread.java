@@ -287,12 +287,14 @@ public class KThread {
     	System.out.println("====Enter " + this.name +"'s KThread.join()");
 
 		if(status == statusFinished)
-			Lib.debug(dbgThread, "Should not join to a finished thread. Thread: " + toString());
-			
+			System.out.println("Should not join to a finished thread. Thread: " + toString());
+		else if(hasJoined){
+			System.out.println("Should not join a thread that has joined another thread. To prevent potential cyclical joining.");
+		}	
 		else{
 			Lib.assertTrue(this != currentThread);
 			Lib.debug(dbgThread, "Joining to thread: " + toString());
-
+			hasJoined = true;
 			boolean interruptStatus = Machine.interrupt().disable();
 
 			boolean isInThreadQueue = false;
@@ -458,6 +460,7 @@ public class KThread {
 		new PingTest(0).run();
 	
 		//selfJoinTest();
+		//joinFinishedTest();
 		cyclicalJoinTest();
 		
     }
@@ -488,6 +491,32 @@ public class KThread {
     	System.out.println("Exit KThread.selfJoinTest()");
     }
     
+	//ADD comments
+	private static void joinFinishedTest(){
+
+		KThread deadThread = new KThread();
+		KThread joinee = new KThread();
+		joinee.setName("Joinee");
+		deadThread.setName("Finished Thread");
+
+		deadThread.setTarget(new Runnable() {
+			public void run(){
+				System.out.println("deadThread is dead");
+			}
+		});
+
+    		joinee.setTarget(new Runnable() {
+			public void run(){
+				deadThread.join();
+			}
+		});
+
+		deadThread.fork();
+		joinee.fork();
+
+	}
+					
+		
     /**
     *TODO Javadocs
     *
@@ -594,4 +623,5 @@ public class KThread {
     private static KThread idleThread = null;
 
 	private static ThreadQueue threadsToBeJoined = ThreadedKernel.scheduler.newThreadQueue(true);
+	private boolean hasJoined = false;
 }
