@@ -196,13 +196,6 @@ public class KThread {
 		currentThread.status = statusFinished;
 
 		//Unjoining & Waking the joined threads
-//		KThread threadToBeAwoken;	
-//
-//		while((threadToBeAwoken = threadsToBeJoined.nextThread()) != null){
-//		
-//			if(threadToBeAwoken.status != statusReady)
-//				threadToBeAwoken.ready();
-//		}
 		currentThread.unjoin();
 		sleep();
     }
@@ -295,7 +288,8 @@ public class KThread {
     	//If the target has already finished; do not allow a join
 		if(status == statusFinished)
 			System.out.println("Should not join to a finished thread. Thread: " + toString());
-	//Blocks Cyclical joining
+			
+		//If the target is joined to the current thread via cyclical dependencies, do not allow a join
 		else if(currentThread.joinedIDs.contains(this.id)){
 			System.out.println("Blocked, cyclical joining. Thread: " + toString());
 		}
@@ -313,16 +307,17 @@ public class KThread {
 			//Save the current interrupt status and disable system interrupts
 			boolean interruptStatus = Machine.interrupt().disable();
 			
-			//If this thread is new it get readied
+			//If this thread is new it gets readied
 			if(status == statusNew)
 				ready();
+				
 			//The thread is then added to the ThreadQueue to wait for execution
 			threadsToBeJoined.waitForAccess(currentThread);
 			
 			//And put to sleep until it's turn on the ThreadQueue
 			sleep();
 
-			//Restore 
+			//Restore interrupts
 			Machine.interrupt().restore(interruptStatus);
 		}
     }
@@ -537,7 +532,6 @@ public class KThread {
 			public void run(){
 				thread2.fork();
 				thread2.join();
-				System.out.println("Thread1 has finished");
 			}
 		});
 		
@@ -545,7 +539,6 @@ public class KThread {
 			public void run(){
 				thread3.fork();
 				thread3.join();
-				System.out.println("Thread2 has finished");
 			}
 		});
     	
@@ -553,7 +546,6 @@ public class KThread {
     	thread3.setTarget(new Runnable() {
 			public void run(){
 				thread1.join();
-				System.out.println("Thread 3 has finished");
 			}
 		});
     	//Fork thread1 to set off the chain of forks and joins.
