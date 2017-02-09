@@ -184,7 +184,6 @@ public class KThread {
     public static void finish() {
 		Lib.debug(dbgThread, "Finishing thread: " + currentThread.toString());
 	
-		hasJoined = false;
 		Machine.interrupt().disable();
 
 		Machine.autoGrader().finishingCurrentThread();
@@ -298,15 +297,16 @@ public class KThread {
 			Lib.assertTrue(this != currentThread);
 			Lib.debug(dbgThread, "Joining to thread: " + toString());
 			
-			hasJoined = true;
+			currentThread.hasJoined = true;
+			System.out.println(currentThread.name + "'s hasJoined has been set to " + currentThread.hasJoined);
 			boolean interruptStatus = Machine.interrupt().disable();
 		
 			if(status == statusNew)
 				ready();
 			threadsToBeJoined.waitForAccess(currentThread);
-			System.out.println("========About to cause " + this.name + " to sleep");
+			System.out.println("========About to cause " + currentThread.name + " to sleep");
 			sleep();
-			System.out.println("========" + this.name + " woke up!");
+			System.out.println("========" + currentThread.name + " woke up!");
 
 			Machine.interrupt().restore(interruptStatus);
 		}
@@ -519,6 +519,7 @@ public class KThread {
 				String result = "thread 1 joined thread 2.";
 				
 				try{
+					thread2.fork();
 					thread2.join();
 				}
 				catch (Error e){
@@ -533,7 +534,8 @@ public class KThread {
 			public void run(){
 				String result = "thread 2 joined thread 3.";
 				
-				try{
+				try{	
+					thread3.fork();
 					thread3.join();
 				}
 				catch (Error e){
@@ -560,8 +562,6 @@ public class KThread {
 		});
     	
     	thread1.fork();
-    	thread2.fork();
-    	thread3.fork();
     	
     	System.out.println("Exit KThread.cyclicalJoinTest()");
     }
@@ -606,5 +606,5 @@ public class KThread {
     private static KThread idleThread = null;
 
 	private static ThreadQueue threadsToBeJoined = ThreadedKernel.scheduler.newThreadQueue(true);
-	private boolean hasJoined = false;
+	public boolean hasJoined = false;
 }
