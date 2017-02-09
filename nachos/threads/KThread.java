@@ -195,8 +195,6 @@ public class KThread {
 		currentThread.status = statusFinished;
 
 		//Unjoining & Waking the joined threads
-		//Lib.assertTrue(currentThread == this);
-
 		KThread threadToBeAwoken;	
 
 		while((threadToBeAwoken = threadsToBeJoined.nextThread()) != null){
@@ -283,37 +281,38 @@ public class KThread {
      * thread.
      */
     public void join() {
-    	//TODO remove vvvv
-    	System.out.println("====Enter " + this.name +"'s KThread.join()");
-
+    	//If the target has already finished; do not allow a join
 		if(status == statusFinished)
 			System.out.println("Should not join to a finished thread. Thread: " + toString());
 		
+		//If the thread has already joined to another thread; do not allow a join
 		else if(hasJoined){
 			System.out.println("Should not join a thread that has joined another" 
 				+ " thread to prevent potential cyclical joining. Thread: " + toString());
 		}	
 		else{
+			//Ensure that the method is called by another active thread
 			Lib.assertTrue(this != currentThread);
 			Lib.debug(dbgThread, "Joining to thread: " + toString());
 			
+			//Set the hasJoined flag to true for the cyclical join check
 			currentThread.hasJoined = true;
-			System.out.println(currentThread.name + "'s hasJoined has been set to " + currentThread.hasJoined);
+			
+			//Save the current interrupt status and disable system interrupts
 			boolean interruptStatus = Machine.interrupt().disable();
-		
+			
+			//If this thread is new it get readied
 			if(status == statusNew)
 				ready();
+			//The thread is then added to the ThreadQueue to wait for execution
 			threadsToBeJoined.waitForAccess(currentThread);
-			System.out.println("========About to cause " + currentThread.name + " to sleep");
+			
+			//And put to sleep until it's turn on the ThreadQueue
 			sleep();
-			System.out.println("========" + currentThread.name + " woke up!");
 
+			//Restore 
 			Machine.interrupt().restore(interruptStatus);
 		}
-		
-    	//TODO remove vvvv
-    	System.out.println("====Exit " + this.name +"'s KThread.join()");
-
     }
 
     /**
@@ -443,19 +442,20 @@ public class KThread {
 		new KThread(new PingTest(1)).setName("forked thread").fork();
 		new PingTest(0).run();
 	
-		//selfJoinTest();
-		//joinFinishedTest();
+		selfJoinTest();
+		joinFinishedTest();
 		cyclicalJoinTest();
 		
     }
     
     /**
-    *TODO Javadocs
-    *
-    */
+     * Tests whether threads are able to join themselves.
+     * The result should always print "Self join test passed."
+     */
     private static void selfJoinTest(){
-    	System.out.println("Enter KThread.selfJoinTest()");
+    	//Create a thread
     	KThread thread = new KThread();
+    	//Set the thread's target to run a join on itself
 		thread.setTarget(new Runnable() {
 			public void run(){
 				String result = "Self join test failed.";
@@ -467,34 +467,39 @@ public class KThread {
 					result = "Self join test passed.";
 				}
 				
-				System.out.println("=======================> " + result);
+				System.out.println(result);
 			}
 		});
+		//Execute the thread
 		thread.fork();
-		
-    	System.out.println("Exit KThread.selfJoinTest()");
     }
     
-	//ADD comments
+	/**
+	 * Tests whether threads are able to joined threads that have already finished.
+	 * The result should always print "Should not join to a finished thread."
+	 */
 	private static void joinFinishedTest(){
-
+		//Create two threads, one to finish and one to join afterwards
 		KThread deadThread = new KThread();
 		KThread joinee = new KThread();
+		//Set names for debugging purposes
 		joinee.setName("Joinee");
 		deadThread.setName("Finished Thread");
 
+		//Set deadThread's run to finish immediately
 		deadThread.setTarget(new Runnable() {
 			public void run(){
-				System.out.println("deadThread is dead");
 			}
 		});
 
-    		joinee.setTarget(new Runnable() {
+		//Set joinee's thread to attempt to join deadThread
+    	joinee.setTarget(new Runnable() {
 			public void run(){
 				deadThread.join();
 			}
 		});
 
+		//Execute both threads
 		deadThread.fork();
 		joinee.fork();
 
@@ -502,68 +507,42 @@ public class KThread {
 					
 		
     /**
-    *TODO Javadocs
-    *
-    */
+     * Tests whether threads can join a thread that is joined to them through a cyclical dependency.
+     * The result should always be that the last thread is unable to join and prints the message: 
+     * "Should not join a thread that has joined another thread to prevent potential cyclical joining."
+     */
     private static void cyclicalJoinTest(){
-    	System.out.println("Enter KThread.cyclicalJoinTest()");
+    	//Create three threads and name them for tracing purposes.
     	KThread thread1 = new KThread();
-    	thread1.setName("thread 1");
+    	thread1.setName("cyclical test thread 1");
     	KThread thread2 = new KThread();
-    	thread2.setName("thread 2");
+    	thread2.setName("cyclical test thread 2");
     	KThread thread3 = new KThread();
-    	thread3.setName("thread 3");
+    	thread3.setName("cyclical test thread 3");
     	
+    	//Set each thread's target to fork the thread it will join and set off a join to that thread.
     	thread1.setTarget(new Runnable() {
 			public void run(){
-				String result = "thread 1 joined thread 2.";
-				
-				try{
-					thread2.fork();
-					thread2.join();
-				}
-				catch (Error e){
-					result = "thread 1 failed to join thread 2.";
-				}
-				
-				System.out.println("=======================> " + result);
+				thread2.fork();
+				thread2.join();
 			}
 		});
 		
 		thread2.setTarget(new Runnable() {
 			public void run(){
-				String result = "thread 2 joined thread 3.";
-				
-				try{	
-					thread3.fork();
-					thread3.join();
-				}
-				catch (Error e){
-					result = "thread 2 failed to join thread 3.";
-				}
-				
-				System.out.println("=======================> " + result);
+				thread3.fork();
+				thread3.join();
 			}
 		});
     	
+    	//The final thread does not need to fork thread1 as it has already been forked.
     	thread3.setTarget(new Runnable() {
 			public void run(){
-				String result = "thread 3 joined thread 1.";
-				
-				try{
-					thread1.join();
-				}
-				catch (Error e){
-					result = "thread 3 failed to join thread 1.";
-				}
-				
-				System.out.println("=======================> " + result);
+				thread1.join();
 			}
 		});
-    	
+    	//Fork thread1 to set off the chain of forks and joins.
     	thread1.fork();
-    	
-    	System.out.println("Exit KThread.cyclicalJoinTest()");
     }
 
 	
