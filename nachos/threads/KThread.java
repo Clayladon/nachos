@@ -1,6 +1,7 @@
 package nachos.threads;
 
 import nachos.machine.*;
+import java.util.ArrayList;
 
 /**
  * A KThread is a thread that can be used to execute Nachos kernel code. Nachos
@@ -195,16 +196,25 @@ public class KThread {
 		currentThread.status = statusFinished;
 
 		//Unjoining & Waking the joined threads
-		KThread threadToBeAwoken;	
+//		KThread threadToBeAwoken;	
+//
+//		while((threadToBeAwoken = threadsToBeJoined.nextThread()) != null){
+//		
+//			if(threadToBeAwoken.status != statusReady)
+//				threadToBeAwoken.ready();
+//		}
+		currentThread.unjoin();
+		sleep();
+    }
 
+	public void unjoin(){
+		KThread threadToBeAwoken;	
 		while((threadToBeAwoken = threadsToBeJoined.nextThread()) != null){
 		
 			if(threadToBeAwoken.status != statusReady)
 				threadToBeAwoken.ready();
 		}
-		sleep();
-    }
-
+	}
     /**
      * Relinquish the CPU if any other thread is ready to run. If so, put the
      * current thread on the ready queue, so that it will eventually be
@@ -280,23 +290,25 @@ public class KThread {
      * call is not guaranteed to return. This thread must not be the current
      * thread.
      */
-    public void join() {
+    public void join(){
+
     	//If the target has already finished; do not allow a join
 		if(status == statusFinished)
 			System.out.println("Should not join to a finished thread. Thread: " + toString());
-		
-		//If the thread has already joined to another thread; do not allow a join
-		else if(hasJoined){
-			System.out.println("Should not join a thread that has joined another" 
-				+ " thread to prevent potential cyclical joining. Thread: " + toString());
-		}	
+	//Blocks Cyclical joining
+		else if(currentThread.joinedIDs.contains(this.id)){
+			System.out.println("Blocked, cyclical joining. Thread: " + toString());
+		}
 		else{
 			//Ensure that the method is called by another active thread
 			Lib.assertTrue(this != currentThread);
 			Lib.debug(dbgThread, "Joining to thread: " + toString());
 			
-			//Set the hasJoined flag to true for the cyclical join check
-			currentThread.hasJoined = true;
+			//Fill this.joinedIDs with the respective thread IDs to prevent cyclical joining.
+			this.joinedIDs.add(currentThread.id);
+			for(int i = 0; i < currentThread.joinedIDs.size(); i++){
+				this.joinedIDs.add(currentThread.joinedIDs.get(i));
+			}
 			
 			//Save the current interrupt status and disable system interrupts
 			boolean interruptStatus = Machine.interrupt().disable();
@@ -525,6 +537,7 @@ public class KThread {
 			public void run(){
 				thread2.fork();
 				thread2.join();
+				System.out.println("Thread1 has finished");
 			}
 		});
 		
@@ -532,6 +545,7 @@ public class KThread {
 			public void run(){
 				thread3.fork();
 				thread3.join();
+				System.out.println("Thread2 has finished");
 			}
 		});
     	
@@ -539,6 +553,7 @@ public class KThread {
     	thread3.setTarget(new Runnable() {
 			public void run(){
 				thread1.join();
+				System.out.println("Thread 3 has finished");
 			}
 		});
     	//Fork thread1 to set off the chain of forks and joins.
@@ -584,6 +599,6 @@ public class KThread {
     private static KThread toBeDestroyed = null;
     private static KThread idleThread = null;
 
-	private static ThreadQueue threadsToBeJoined = ThreadedKernel.scheduler.newThreadQueue(true);
-	public boolean hasJoined = false;
+	private ThreadQueue threadsToBeJoined = ThreadedKernel.scheduler.newThreadQueue(true);
+	private ArrayList<Integer> joinedIDs = new ArrayList<Integer>();
 }
