@@ -50,4 +50,28 @@ public class Alarm {
 	while (wakeTime > Machine.timer().getTime())
 	    KThread.yield();
     }
+	private PriorityQueue<waitingThread> waitQueue = new PriorityQueue()<waitingThread>;
+	private class WaitingThread implements Comparable<waitingThread>{
+
+		public KThread waitingThread;
+		public long wakeTime;
+		
+
+		public WaitingThread(KThread thread, long time){
+
+			this.waitingThread = thread;
+			this.wakeTime = time;
+
+		}
+
+		public int compareTo(waitingThread other){
+
+			if(wakeTime > other.wakeTime)
+				return 1;
+			else if(wakeTime == other.wakeTime)
+				return 0;
+			else
+				return -1;
+		}
+	}
 }
