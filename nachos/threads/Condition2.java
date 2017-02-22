@@ -1,6 +1,8 @@
 package nachos.threads;
 
 import nachos.machine.*;
+import java.util.concurrent.LinkedBlockingQueue;
+import nachos.threads.KThread;
 
 /**
  * An implementation of condition variables that disables interrupt()s for
@@ -22,6 +24,7 @@ public class Condition2 {
      */
     public Condition2(Lock conditionLock) {
 	this.conditionLock = conditionLock;
+	waitQueue = new LinkedBlockingQueue<KThread>();
     }
 
     /**
@@ -31,10 +34,17 @@ public class Condition2 {
      * automatically reacquire the lock before <tt>sleep()</tt> returns.
      */
     public void sleep() {
-	Lib.assertTrue(conditionLock.isHeldByCurrentThread());
-	conditionLock.release();
+		Lib.assertTrue(conditionLock.isHeldByCurrentThread());
+	
+		boolean interruptStatus = Machine.interrupt().disable();
+		conditionLock.release();
 
-	conditionLock.acquire();
+		waitQueue.add(KThread.getCurrentThread());
+		KThread.sleep();
+	
+		conditionLock.acquire();
+	
+		Machine.interrupt().restore(interruptStatus);
     }
 
     /**
@@ -42,7 +52,20 @@ public class Condition2 {
      * current thread must hold the associated lock.
      */
     public void wake() {
-	Lib.assertTrue(conditionLock.isHeldByCurrentThread());
+		Lib.assertTrue(conditionLock.isHeldByCurrentThread());
+	
+		boolean interruptStatus = Machine.interrupt().disable();
+		conditionLock.release();
+		
+		if(waitQueue.peek() != null)
+			try{
+				((KThread)waitQueue.take()).ready();
+			}
+			catch(InterruptedException e){
+				System.out.println("Error waking thread.");
+			}
+		
+		Machine.interrupt().restore(interruptStatus);
     }
 
     /**
@@ -50,8 +73,22 @@ public class Condition2 {
      * thread must hold the associated lock.
      */
     public void wakeAll() {
-	Lib.assertTrue(conditionLock.isHeldByCurrentThread());
+		Lib.assertTrue(conditionLock.isHeldByCurrentThread());
+	
+		boolean interruptStatus = Machine.interrupt().disable();
+		conditionLock.release();
+		
+		while(waitQueue.peek() != null)
+			try{
+				((KThread)waitQueue.take()).ready();
+			}
+			catch(InterruptedException e){
+				System.out.println("Error waking thread.");
+			}
+			
+		Machine.interrupt().restore(interruptStatus);
     }
 
     private Lock conditionLock;
+    private LinkedBlockingQueue<KThread> waitQueue;
 }
