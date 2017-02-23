@@ -551,7 +551,14 @@ public class KThread {
     	//Fork thread1 to set off the chain of forks and joins.
     	thread1.fork();
     }
-
+    
+    /**
+     * Accessor method that returns the current thread.
+     *
+     */
+	public static KThread getCurrentThread(){
+		return currentThread;
+	}
 	
     private static final char dbgThread = 't';
 
