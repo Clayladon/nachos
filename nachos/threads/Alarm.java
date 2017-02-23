@@ -2,6 +2,7 @@ package nachos.threads;
 
 import nachos.machine.*;
 import java.util.PriorityQueue;
+import machos.threads.KThread;
 
 /**
  * Uses the hardware timer to provide preemption, and to allow threads to sleep
@@ -28,7 +29,16 @@ public class Alarm {
      * that should be run.
      */
     public void timerInterrupt() {
-	KThread.currentThread().yield();
+    
+		boolean interruptStatus = Machine.interrupt().disable();
+    	long currentTime = Machine.timer.getTime();
+    	
+    	while(!waitQueue.isEmpty() && (waitQueue.peek().wakeTime <= time)){
+    		waitQueue.poll().ready();
+    	}
+    	
+		Machine.interrupt().restore(interruptStatus);
+		KThread.currentThread().yield();
     }
 
     /**
@@ -45,13 +55,27 @@ public class Alarm {
      *
      * @see	nachos.machine.Timer#getTime()
      */
-    public void waitUntil(long x) {
-	// for now, cheat just to get something working (busy waiting is bad)
-	long wakeTime = Machine.timer().getTime() + x;
-	while (wakeTime > Machine.timer().getTime())
-	    KThread.yield();
+    public void waitUntil(long timeToWait) {
+    
+		boolean interruptStatus = Machine.interrupt().disable();
+		
+		long wakeTime = Machine.timer().getTime() + timeToWait;
+		waitingThread waiter = new waitingThread(wakeTime, KThread.currentThread());
+		
+		waitQueue.add(waiter);
+		KThread.currentThread().sleep();
+		
+		Machine.interrupt().restore(interruptStatus);
     }
+	
+	
+	
+	//Datafields
 	private PriorityQueue<waitingThread> waitQueue = new PriorityQueue<waitingThread>();
+	
+	
+	
+	//Custom Classes
 	private class waitingThread implements Comparable<waitingThread>{
 
 		public KThread waitingThread;
