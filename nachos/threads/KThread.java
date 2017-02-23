@@ -453,7 +453,7 @@ public class KThread {
 		joinFinishedTest();
 		cyclicalJoinTest();
 		//threadTimeOutTest();
-		multiThreadingTest();
+		//multiThreadingTest();
 		
 		
     }
