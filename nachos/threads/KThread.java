@@ -452,6 +452,9 @@ public class KThread {
 		selfJoinTest();
 		joinFinishedTest();
 		cyclicalJoinTest();
+		//threadTimeOutTest();
+		multiThreadingTest();
+		
 		
     }
     
@@ -550,6 +553,49 @@ public class KThread {
 		});
     	//Fork thread1 to set off the chain of forks and joins.
     	thread1.fork();
+    }
+    
+    private static void threadTimeOutTest(){
+    	KThread timedThread = new KThread();
+    	timedThread.setName("timed thread");
+    	
+    	timedThread.setTarget(new Runnable() {
+    		public void run(){
+    			for(int i=0; i<10_000_000; i++){
+    				//long x = i * i * i * i * i * i * i * i * i;
+    				System.out.print("*");
+    			}
+    			System.out.println("Thread timeout test succeeded!");
+    		}
+		});
+		timedThread.fork();
+    }
+    
+    private static void multiThreadingTest(){
+    	KThread starThread = new KThread();
+    	KThread equalsThread = new KThread();
+    	starThread.setName("star thread");
+    	equalsThread.setName("equals thread");
+    	
+    	starThread.setTarget(new Runnable() {
+    		public void run(){
+    			for(int i=0; i<1_000_000; i++){
+    				System.out.print("*");
+    			}
+    			System.out.println("Thread timeout test succeeded!");
+    		}
+		});
+		equalsThread.setTarget(new Runnable() {
+    		public void run(){
+    			for(int i=0; i<1_000_000; i++){
+    				System.out.print("=");
+    			}
+    			System.out.println("Thread timeout test succeeded!");
+    		}
+		});
+		
+		starThread.fork();
+		equalsThread.fork();
     }
 	
     private static final char dbgThread = 't';
