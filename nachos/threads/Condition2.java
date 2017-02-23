@@ -39,7 +39,7 @@ public class Condition2 {
 		boolean interruptStatus = Machine.interrupt().disable();
 		conditionLock.release();
 
-		waitQueue.add(KThread.getCurrentThread());
+		waitQueue.add(KThread.currentThread);
 		KThread.sleep();
 	
 		conditionLock.acquire();
@@ -87,6 +87,18 @@ public class Condition2 {
 			}
 			
 		Machine.interrupt().restore(interruptStatus);
+    }
+
+    public static void selfTest(){
+
+	Lock lock = new Lock();
+	Condition2 tester = new Condition2(lock);
+
+	KThread sleeper = new KThread();
+	sleeper.setName("Sleeping Thread");
+
+	
+
     }
 
     private Lock conditionLock;
