@@ -74,4 +74,97 @@ public class Communicator {
     
 		return word;
     }
+    
+    public static void selfTest(){
+    	System.out.println("Entered Communicator.selfTest()");
+    	//manySpeakers();
+    	//manyListeners();
+    	speakerListenerTest();
+    	//listenerSpeakerTest();
+    	
+    }
+    public static void manySpeakers(){
+    	
+    	Communicator manySpeakersComm = new Communicator();
+    	
+    	manySpeakersComm.speak(0);
+    	manySpeakersComm.speak(1);
+    	manySpeakersComm.speak(2);
+    	manySpeakersComm.speak(3);
+    	manySpeakersComm.speak(4);
+    	manySpeakersComm.speak(5);
+    	manySpeakersComm.speak(6);
+    	manySpeakersComm.speak(7);
+    	manySpeakersComm.speak(8);
+    	manySpeakersComm.speak(9);
+    	
+    	manySpeakersComm.listen();
+    	manySpeakersComm.listen();
+    	manySpeakersComm.listen();
+    	manySpeakersComm.listen();
+    	manySpeakersComm.listen();
+    	manySpeakersComm.listen();
+    	manySpeakersComm.listen();
+    	manySpeakersComm.listen();
+    	manySpeakersComm.listen();
+    	manySpeakersComm.listen();
+    	
+    	System.out.println("Multiple speaker test succeeded!");
+    	
+    }
+    public static void manyListeners(){
+    	
+    	Communicator manySpeakersComm = new Communicator();
+    	
+    	manySpeakersComm.listen();
+    	manySpeakersComm.listen();
+    	manySpeakersComm.listen();
+    	manySpeakersComm.listen();
+    	manySpeakersComm.listen();
+    	manySpeakersComm.listen();
+    	manySpeakersComm.listen();
+    	manySpeakersComm.listen();
+    	manySpeakersComm.listen();
+    	manySpeakersComm.listen();
+    	
+    	manySpeakersComm.speak(0);
+    	manySpeakersComm.speak(1);
+    	manySpeakersComm.speak(2);
+    	manySpeakersComm.speak(3);
+    	manySpeakersComm.speak(4);
+    	manySpeakersComm.speak(5);
+    	manySpeakersComm.speak(6);
+    	manySpeakersComm.speak(7);
+    	manySpeakersComm.speak(8);
+    	manySpeakersComm.speak(9);
+    	
+    	System.out.println("Multiple listener test succeeded!");
+    
+    }
+    
+    public static void speakerListenerTest(){
+    	System.out.println("Entered Communicator.speakerListenerTest()");
+    	Communicator tester = new Communicator();
+    	
+    	System.out.println("Created communicator object, speaking...");
+    	
+    	tester.speak(123);
+    	System.out.println("Spoke word, listening...");
+    	tester.listen();
+    	
+    	System.out.println("speakerListenerTest() succeeded!");
+    }
+    
+    public static void listenerSpeakerTest(){
+    	System.out.println("Entered Communicator.listenerSpeakerTest()");
+    	Communicator tester = new Communicator();
+    	
+    	System.out.println("Created communicator object, listening...");
+    	
+    	tester.listen();
+    	System.out.println("Listening for word, speaking...");
+    	tester.speak(123);
+    	
+    	System.out.println("listenerSpeakerTest() succeeded!");
+    }
 }
