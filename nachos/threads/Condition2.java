@@ -39,7 +39,7 @@ public class Condition2 {
 		boolean interruptStatus = Machine.interrupt().disable();
 		conditionLock.release();
 
-		waitQueue.add(KThread.currentThread);
+		waitQueue.add(KThread.currentThread());
 		KThread.sleep();
 	
 		conditionLock.acquire();
@@ -55,7 +55,6 @@ public class Condition2 {
 		Lib.assertTrue(conditionLock.isHeldByCurrentThread());
 	
 		boolean interruptStatus = Machine.interrupt().disable();
-		conditionLock.release();
 		
 		if(waitQueue.peek() != null)
 			try{
@@ -76,7 +75,6 @@ public class Condition2 {
 		Lib.assertTrue(conditionLock.isHeldByCurrentThread());
 	
 		boolean interruptStatus = Machine.interrupt().disable();
-		conditionLock.release();
 		
 		while(waitQueue.peek() != null)
 			try{
@@ -95,10 +93,45 @@ public class Condition2 {
 	Condition2 tester = new Condition2(lock);
 
 	KThread sleeper = new KThread();
-	sleeper.setName("Sleeping Thread");
+	KThread waker = new KThread();
+	waker.setTarget(new Runnable(){
+		public void run(){
+
+			lock.acquire();
+			
+			if(tester.waitQueue.isEmpty())
+				System.out.println("Empty waitQueue");
+			else
+				System.out.println("Not empty waitQueue");
+		
+			tester.wake();
+
+			tester.sleep();
+		
+			if(tester.waitQueue.isEmpty())
+				System.out.println("Empty waitQueue");
+			else
+				System.out.println("Not empty waitQueue");
+
 
 	
-
+			lock.release();
+		}
+	});
+	sleeper.setTarget(new Runnable(){
+		public void run(){
+				System.out.println("Start");
+				lock.acquire();
+				System.out.println("Acquired lock, putting to sleep.");
+				waker.fork();
+				tester.sleep();
+				System.out.println("Woke up. Releasing lock.");
+				tester.wake();
+				lock.release();	
+			}
+		});
+		sleeper.fork();
+		sleeper.join();
     }
 
     private Lock conditionLock;
