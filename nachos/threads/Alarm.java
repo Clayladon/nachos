@@ -2,7 +2,7 @@ package nachos.threads;
 
 import nachos.machine.*;
 import java.util.PriorityQueue;
-import machos.threads.KThread;
+import nachos.threads.KThread;
 
 /**
  * Uses the hardware timer to provide preemption, and to allow threads to sleep
@@ -31,10 +31,10 @@ public class Alarm {
     public void timerInterrupt() {
     
 		boolean interruptStatus = Machine.interrupt().disable();
-    	long currentTime = Machine.timer.getTime();
+    	long currentTime = Machine.timer().getTime();
     	
-    	while(!waitQueue.isEmpty() && (waitQueue.peek().wakeTime <= time)){
-    		waitQueue.poll().ready();
+    	while(!waitQueue.isEmpty() && (waitQueue.peek().wakeTime <= currentTime)){
+    		waitQueue.poll().waitingThread.ready();
     	}
     	
 		Machine.interrupt().restore(interruptStatus);
@@ -60,7 +60,7 @@ public class Alarm {
 		boolean interruptStatus = Machine.interrupt().disable();
 		
 		long wakeTime = Machine.timer().getTime() + timeToWait;
-		waitingThread waiter = new waitingThread(wakeTime, KThread.currentThread());
+		waitingThread waiter = new waitingThread(KThread.currentThread(), wakeTime);
 		
 		waitQueue.add(waiter);
 		KThread.currentThread().sleep();
