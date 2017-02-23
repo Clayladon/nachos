@@ -57,7 +57,7 @@ public class Alarm {
      */
     public void waitUntil(long timeToWait) {
     
-		boolean interruptStatus = Machine.interrupt().disable();
+		/*boolean interruptStatus = Machine.interrupt().disable();
 		
 		long wakeTime = Machine.timer().getTime() + timeToWait;
 		waitingThread waiter = new waitingThread(KThread.currentThread(), wakeTime);
@@ -65,7 +65,13 @@ public class Alarm {
 		waitQueue.add(waiter);
 		KThread.currentThread().sleep();
 		
-		Machine.interrupt().restore(interruptStatus);
+		Machine.interrupt().restore(interruptStatus);*/
+		
+		
+		// for now, cheat just to get something working (busy waiting is bad)
+		long wakeTime = Machine.timer().getTime() + x;
+		while (wakeTime > Machine.timer().getTime())
+	    KThread.yield();
     }
 	
 	
