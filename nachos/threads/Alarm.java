@@ -30,14 +30,14 @@ public class Alarm {
      */
     public void timerInterrupt() {
     
-		boolean interruptStatus = Machine.interrupt().disable();
+		/*boolean interruptStatus = Machine.interrupt().disable();
     	long currentTime = Machine.timer().getTime();
     	
     	while(!waitQueue.isEmpty() && (waitQueue.peek().wakeTime <= currentTime)){
     		waitQueue.poll().waitingThread.ready();
     	}
     	
-		Machine.interrupt().restore(interruptStatus);
+		Machine.interrupt().restore(interruptStatus);*/
 		KThread.currentThread().yield();
     }
 
