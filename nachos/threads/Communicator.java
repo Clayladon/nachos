@@ -41,6 +41,7 @@ public class Communicator {
      */
     public void speak(int word) {
     	lock.acquire();
+    	
     	while(numListenersWaiting == 0 || (!sharedMessageFree))
     		speaker.sleep();
     		
@@ -76,10 +77,9 @@ public class Communicator {
     }
     
     public static void selfTest(){
-    	System.out.println("Entered Communicator.selfTest()");
     	//manySpeakers();
-    	//manyListeners();
-    	speakerListenerTest();
+    	manyListeners();
+    	//speakerListenerTest();
     	//listenerSpeakerTest();
     	
     }
@@ -87,83 +87,242 @@ public class Communicator {
     	
     	Communicator manySpeakersComm = new Communicator();
     	
-    	manySpeakersComm.speak(0);
-    	manySpeakersComm.speak(1);
-    	manySpeakersComm.speak(2);
-    	manySpeakersComm.speak(3);
-    	manySpeakersComm.speak(4);
-    	manySpeakersComm.speak(5);
-    	manySpeakersComm.speak(6);
-    	manySpeakersComm.speak(7);
-    	manySpeakersComm.speak(8);
-    	manySpeakersComm.speak(9);
+    	KThread thread1 = new KThread();
+    	thread1.setName("thread 1");
+    	thread1.setTarget(new Runnable() {
+    		public void run(){
+    			manySpeakersComm.speak(1);
+    		}
+    	});
+    	thread1.fork();
     	
-    	manySpeakersComm.listen();
-    	manySpeakersComm.listen();
-    	manySpeakersComm.listen();
-    	manySpeakersComm.listen();
-    	manySpeakersComm.listen();
-    	manySpeakersComm.listen();
-    	manySpeakersComm.listen();
-    	manySpeakersComm.listen();
-    	manySpeakersComm.listen();
-    	manySpeakersComm.listen();
+    	KThread thread2 = new KThread();
+    	thread2.setName("thread 2");
+    	thread2.setTarget(new Runnable() {
+    		public void run(){
+    			manySpeakersComm.speak(2);
+    		}
+    	});
+    	thread2.fork();
+    	
+    	KThread thread3 = new KThread();
+    	thread3.setName("thread 3");
+    	thread3.setTarget(new Runnable() {
+    		public void run(){
+    			manySpeakersComm.speak(3);
+    		}
+    	});
+    	thread3.fork();
+    	
+    	KThread thread4 = new KThread();
+    	thread4.setName("thread 4");
+    	thread4.setTarget(new Runnable() {
+    		public void run(){
+    			manySpeakersComm.speak(4);
+    		}
+    	});
+    	thread4.fork();
+    	
+    	KThread thread5 = new KThread();
+    	thread5.setName("thread 5");
+    	thread5.setTarget(new Runnable() {
+    		public void run(){
+    			manySpeakersComm.speak(5);
+    		}
+    	});
+    	thread5.fork();
+    	
+    	KThread thread6 = new KThread();
+    	thread6.setName("thread 6");
+    	thread6.setTarget(new Runnable() {
+    		public void run(){
+    			manySpeakersComm.listen();
+    		}
+    	});
+    	thread6.fork();
+    	
+    	KThread thread7 = new KThread();
+    	thread7.setName("thread 7");
+    	thread7.setTarget(new Runnable() {
+    		public void run(){
+    			manySpeakersComm.listen();
+    		}
+    	});
+    	thread7.fork();
+    	
+    	KThread thread8 = new KThread();
+    	thread8.setName("thread 8");
+    	thread8.setTarget(new Runnable() {
+    		public void run(){
+    			manySpeakersComm.listen();
+    		}
+    	});
+    	thread8.fork();
+    	
+    	KThread thread9 = new KThread();
+    	thread9.setName("thread 9");
+    	thread9.setTarget(new Runnable() {
+    		public void run(){
+    			manySpeakersComm.listen();
+    		}
+    	});
+    	thread9.fork();
+    	
+    	KThread thread10 = new KThread();
+    	thread10.setName("thread 10");
+    	thread10.setTarget(new Runnable() {
+    		public void run(){
+    			manySpeakersComm.listen();
+    		}
+    	});
+    	thread10.fork();
     	
     	System.out.println("Multiple speaker test succeeded!");
     	
     }
     public static void manyListeners(){
     	
-    	Communicator manySpeakersComm = new Communicator();
+    	Communicator manyListenersComm = new Communicator();
     	
-    	manySpeakersComm.listen();
-    	manySpeakersComm.listen();
-    	manySpeakersComm.listen();
-    	manySpeakersComm.listen();
-    	manySpeakersComm.listen();
-    	manySpeakersComm.listen();
-    	manySpeakersComm.listen();
-    	manySpeakersComm.listen();
-    	manySpeakersComm.listen();
-    	manySpeakersComm.listen();
+    	KThread thread1 = new KThread();
+    	thread1.setName("thread 1");
+    	thread1.setTarget(new Runnable() {
+    		public void run(){
+    			manyListenersComm.listen();
+    		}
+    	});
+    	thread1.fork();
     	
-    	manySpeakersComm.speak(0);
-    	manySpeakersComm.speak(1);
-    	manySpeakersComm.speak(2);
-    	manySpeakersComm.speak(3);
-    	manySpeakersComm.speak(4);
-    	manySpeakersComm.speak(5);
-    	manySpeakersComm.speak(6);
-    	manySpeakersComm.speak(7);
-    	manySpeakersComm.speak(8);
-    	manySpeakersComm.speak(9);
+    	KThread thread2 = new KThread();
+    	thread2.setName("thread 2");
+    	thread2.setTarget(new Runnable() {
+    		public void run(){
+    			manyListenersComm.listen();
+    		}
+    	});
+    	thread2.fork();
+    	
+    	KThread thread3 = new KThread();
+    	thread3.setName("thread 3");
+    	thread3.setTarget(new Runnable() {
+    		public void run(){
+    			manyListenersComm.listen();
+    		}
+    	});
+    	thread3.fork();
+    	
+    	KThread thread4 = new KThread();
+    	thread4.setName("thread 4");
+    	thread4.setTarget(new Runnable() {
+    		public void run(){
+    			manyListenersComm.listen();
+    		}
+    	});
+    	thread4.fork();
+    	
+    	KThread thread5 = new KThread();
+    	thread5.setName("thread 5");
+    	thread5.setTarget(new Runnable() {
+    		public void run(){
+    			manyListenersComm.listen();
+    		}
+    	});
+    	thread5.fork();
+    	
+    	KThread thread6 = new KThread();
+    	thread6.setName("thread 6");
+    	thread6.setTarget(new Runnable() {
+    		public void run(){
+    			manyListenersComm.speak(6);
+    		}
+    	});
+    	thread6.fork();
+    	
+    	KThread thread7 = new KThread();
+    	thread7.setName("thread 7");
+    	thread7.setTarget(new Runnable() {
+    		public void run(){
+    			manyListenersComm.speak(7);
+    		}
+    	});
+    	thread7.fork();
+    	
+    	KThread thread8 = new KThread();
+    	thread8.setName("thread 8");
+    	thread8.setTarget(new Runnable() {
+    		public void run(){
+    			manyListenersComm.speak(8);
+    		}
+    	});
+    	thread8.fork();
+    	
+    	KThread thread9 = new KThread();
+    	thread9.setName("thread 9");
+    	thread9.setTarget(new Runnable() {
+    		public void run(){
+    			manyListenersComm.speak(9);
+    		}
+    	});
+    	thread9.fork();
+    	
+    	KThread thread10 = new KThread();
+    	thread10.setName("thread 10");
+    	thread10.setTarget(new Runnable() {
+    		public void run(){
+    			manyListenersComm.speak(10);
+    		}
+    	});
+    	thread10.fork();
     	
     	System.out.println("Multiple listener test succeeded!");
     
     }
     
     public static void speakerListenerTest(){
-    	System.out.println("Entered Communicator.speakerListenerTest()");
     	Communicator tester = new Communicator();
     	
-    	System.out.println("Created communicator object, speaking...");
+    	KThread thread1 = new KThread();
+    	thread1.setName("thread 1");
+    	thread1.setTarget(new Runnable() {
+    		public void run(){
+    			tester.speak(1);
+    		}
+    	});
+    	thread1.fork();
     	
-    	tester.speak(123);
-    	System.out.println("Spoke word, listening...");
-    	tester.listen();
+    	KThread thread2 = new KThread();
+    	thread2.setName("thread 2");
+    	thread2.setTarget(new Runnable() {
+    		public void run(){
+    			tester.listen();
+    		}
+    	});
+    	thread2.fork();
     	
     	System.out.println("speakerListenerTest() succeeded!");
     }
     
     public static void listenerSpeakerTest(){
-    	System.out.println("Entered Communicator.listenerSpeakerTest()");
     	Communicator tester = new Communicator();
     	
-    	System.out.println("Created communicator object, listening...");
+    	KThread thread1 = new KThread();
+    	thread1.setName("thread 1");
+    	thread1.setTarget(new Runnable() {
+    		public void run(){
+    			tester.listen();
+    		}
+    	});
+    	thread1.fork();
     	
-    	tester.listen();
-    	System.out.println("Listening for word, speaking...");
-    	tester.speak(123);
+    	
+    	KThread thread2 = new KThread();
+    	thread2.setName("thread 2");
+    	thread2.setTarget(new Runnable() {
+    		public void run(){
+    			tester.speak(123);
+    		}
+    	});
+    	thread2.fork();
     	
     	System.out.println("listenerSpeakerTest() succeeded!");
     }
