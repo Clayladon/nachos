@@ -287,7 +287,7 @@ public class KThread {
 
     	//If the target has already finished; do not allow a join
 		if(status == statusFinished)
-			System.out.println("Should not join to a finished thread. Thread: " + toString());
+			System.out.println("Blocked, attempting join to a finished thread. Thread: " + toString());
 			
 		//If the target is joined to the current thread via cyclical dependencies, do not allow a join
 		else if(currentThread.joinedIDs.contains(this.id)){
@@ -444,14 +444,17 @@ public class KThread {
      * Tests whether this module is working.
      */
     public static void selfTest() {
-		Lib.debug(dbgThread, "Enter KThread.selfTest");
+		Lib.debug(KThreadTestChar, "KThread.selfTest(): Starting self test.");
 	
 		new KThread(new PingTest(1)).setName("forked thread").fork();
 		new PingTest(0).run();
-	
+		
+		
+		Lib.debug(KThreadTestChar, "KThread.selfTest(): Finished default tests, beginning custom tests.");
 		selfJoinTest();
 		joinFinishedTest();
 		cyclicalJoinTest();
+		
 		
     }
     
@@ -460,21 +463,27 @@ public class KThread {
      * The result should always print "Self join test passed."
      */
     private static void selfJoinTest(){
+		Lib.debug(KThreadTestChar, "KThread.selfJoinTest(): Starting self join test.");
+    
     	//Create a thread
     	KThread thread = new KThread();
     	//Set the thread's target to run a join on itself
+    	
+		Lib.debug(KThreadTestChar, "KThread.selfJoinTest(): Thread created.");
+
 		thread.setTarget(new Runnable() {
 			public void run(){
 				String result = "Self join test failed.";
 				
 				try{
+					Lib.debug(KThreadTestChar, "KThread.selfJoinTest(): Thread about to join itself.");
 					thread.join();
 				}
 				catch (Error e){
 					result = "Self join test passed.";
 				}
 				
-				System.out.println(result);
+				Lib.debug(KThreadTestChar, "KThread.selfJoinTest(): " + result);
 			}
 		});
 		//Execute the thread
@@ -487,22 +496,29 @@ public class KThread {
 	 * The result should always print "Should not join to a finished thread."
 	 */
 	private static void joinFinishedTest(){
+	
+		Lib.debug(KThreadTestChar, "KThread.joinFinishedTest(): Starting test to join finished thread.");
+		
 		//Create two threads, one to finish and one to join afterwards
 		KThread deadThread = new KThread();
 		KThread joinee = new KThread();
 		//Set names for debugging purposes
 		joinee.setName("Joinee");
 		deadThread.setName("Finished Thread");
+		
+		Lib.debug(KThreadTestChar, "KThread.joinFinishedTest(): Two threads created, deadThread and joinee.");
 
 		//Set deadThread's run to finish immediately
 		deadThread.setTarget(new Runnable() {
 			public void run(){
+				Lib.debug(KThreadTestChar, "KThread.joinFinishedTest(): deadThread finished running.");
 			}
 		});
 
 		//Set joinee's thread to attempt to join deadThread
     	joinee.setTarget(new Runnable() {
 			public void run(){
+				Lib.debug(KThreadTestChar, "KThread.joinFinishedTest(): joinee about to join deadThread.");
 				deadThread.join();
 			}
 		});
@@ -511,6 +527,8 @@ public class KThread {
 		deadThread.fork();
 		joinee.fork();
 		joinee.join();
+		
+		Lib.debug(KThreadTestChar, "KThread.joinFinishedTest(): Finished test to join to finished thread.");
 
 	}
 					
@@ -521,6 +539,9 @@ public class KThread {
      * "Should not join a thread that has joined another thread to prevent potential cyclical joining."
      */
     private static void cyclicalJoinTest(){
+    
+		Lib.debug(KThreadTestChar, "KThread.cyclicalJoinTest(): Starting test to identify cyclical dependency.");
+    
     	//Create three threads and name them for tracing purposes.
     	KThread thread1 = new KThread();
     	thread1.setName("cyclical test thread 1");
@@ -529,9 +550,13 @@ public class KThread {
     	KThread thread3 = new KThread();
     	thread3.setName("cyclical test thread 3");
     	
+    	
+		Lib.debug(KThreadTestChar, "KThread.cyclicalJoinTest(): Three threads created.");
+    	
     	//Set each thread's target to fork the thread it will join and set off a join to that thread.
     	thread1.setTarget(new Runnable() {
 			public void run(){
+				Lib.debug(KThreadTestChar, "KThread.cyclicalJoinTest(): thread1 about to join thread2.");
 				thread2.fork();
 				thread2.join();
 			}
@@ -539,6 +564,7 @@ public class KThread {
 		
 		thread2.setTarget(new Runnable() {
 			public void run(){
+				Lib.debug(KThreadTestChar, "KThread.cyclicalJoinTest(): thread2 about to join thread3.");
 				thread3.fork();
 				thread3.join();
 			}
@@ -547,16 +573,19 @@ public class KThread {
     	//The final thread does not need to fork thread1 as it has already been forked.
     	thread3.setTarget(new Runnable() {
 			public void run(){
+				Lib.debug(KThreadTestChar, "KThread.cyclicalJoinTest(): thread3 about to join thread1.");
 				thread1.join();
 			}
 		});
     	//Fork thread1 to set off the chain of forks and joins.
     	thread1.fork();
-	thread1.join();
+		thread1.join();
+		Lib.debug(KThreadTestChar, "KThread.cyclicalJoinTest(): Finished cyclical join test.");
     }
     
 	
     private static final char dbgThread = 't';
+    private static final char KThreadTestChar = 'k';
 
     /**
      * Additional state used by schedulers.
