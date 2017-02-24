@@ -71,38 +71,73 @@ public class Alarm {
     public static void selfTest(){
 
 	Alarm clock = new Alarm();
+	//Stack multiple waiters with the same timeToWait
+	//The threads should finish in the order they were
+	//called.
+	KThread threadA = new KThread();
+	KThread threadB = new KThread();
+	KThread threadC = new KThread();
 
-	KThread thread1 = KThread();
-	KThread thread2 = KThread();
-	KThread thread3 = KThread();
+	threadA.setTarget(new Runnable(){
+		public void run(){
+
+			clock.waitUntil(10000000);
+			System.out.println("ThreadA done");
+		}
+	});
+	threadB.setTarget(new Runnable(){
+		public void run(){
+
+			clock.waitUntil(10000000);
+			System.out.println("ThreadB done");
+		}
+	});
+	threadC.setTarget(new Runnable(){
+		public void run(){
+
+			clock.waitUntil(10000000);
+			System.out.println("ThreadC done");
+		}
+	});
+
+	threadA.fork();
+	threadB.fork();
+	threadC.fork();
+	threadC.join();
+
+	//Stack waiters with differing timeToWait
+	//The threads should finish in the order
+	//dictated by their timeToWait
+	KThread thread1 = new KThread();
+	KThread thread2 = new KThread();
+	KThread thread3 = new KThread();
 
 	thread1.setTarget(new Runnable(){
 		public void run(){
 
-			clock.waitUntil(10000);
-			thread2.fork();
-			System.out.print("Thread1 done");
+			clock.waitUntil(200000000);
+			System.out.println("Thread1 done");
 		}
 	});
 	thread2.setTarget(new Runnable(){
 		public void run(){
 
-			clock.waitUntil(10000);
-			thread3.fork();
-			System.out.print("Thread1 done");
+			clock.waitUntil(100000000);
+			System.out.println("Thread2 done");
 		}
 	});
 	thread3.setTarget(new Runnable(){
 		public void run(){
 
-			clock.waitUntil(10000);
-			System.out.print("Thread1 done");
+			clock.waitUntil(10000000);
+			System.out.println("Thread3 done");
 		}
 	});
 
 	thread1.fork();
+	thread2.fork();
+	thread3.fork();
 	thread1.join();
-	thread3.join();
     }	
 	
 	
