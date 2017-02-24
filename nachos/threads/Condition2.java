@@ -91,9 +91,22 @@ public class Condition2 {
 
 	Lock lock = new Lock();
 	Condition2 tester = new Condition2(lock);
-
+	
+	//Testing the wake & sleep methods
 	KThread sleeper = new KThread();
 	KThread waker = new KThread();
+	sleeper.setTarget(new Runnable(){
+		public void run(){
+				System.out.println("Start");
+				lock.acquire();
+				System.out.println("Acquired lock, putting to sleep.");
+				waker.fork();
+				tester.sleep();
+				System.out.println("Woke up. Releasing lock.");
+				tester.wake();
+				lock.release();	
+			}
+		});
 	waker.setTarget(new Runnable(){
 		public void run(){
 
@@ -114,24 +127,63 @@ public class Condition2 {
 				System.out.println("Not empty waitQueue");
 
 
-	
+			tester.wake();	//Testing if wake can handle an empty
+					//waitQueue	
 			lock.release();
 		}
 	});
-	sleeper.setTarget(new Runnable(){
+		sleeper.fork();
+		sleeper.join();
+
+	//Testing multiple sleeps & the wakeAll method
+
+
+	KThread sleep1 = new KThread();
+	KThread sleep2 = new KThread();
+	KThread sleep3 = new KThread();
+	KThread wakeMulti = new KThread();
+	
+	sleep1.setTarget(new Runnable(){
 		public void run(){
-				System.out.println("Start");
 				lock.acquire();
-				System.out.println("Acquired lock, putting to sleep.");
-				waker.fork();
+				sleep2.fork();
 				tester.sleep();
-				System.out.println("Woke up. Releasing lock.");
+				System.out.println("Sleep1 woke up.");
+				lock.release();	
+			}
+		});
+	sleep2.setTarget(new Runnable(){
+		public void run(){
+				lock.acquire();
+				sleep3.fork();
+				tester.sleep();
+				System.out.println("Sleep2 woke up.");
+				lock.release();	
+			}
+		});
+	sleep3.setTarget(new Runnable(){
+		public void run(){
+				lock.acquire();
+				wakeMulti.fork();
+				tester.sleep();
+				System.out.println("Sleep3 woke up");
 				tester.wake();
 				lock.release();	
 			}
 		});
-		sleeper.fork();
-		sleeper.join();
+	wakeMulti.setTarget(new Runnable(){
+		public void run(){
+			lock.acquire();
+			tester.wakeAll();
+			tester.sleep();
+			System.out.println("wakeMulti finished.");
+			lock.release();
+		}
+	});
+
+	sleep1.fork();
+	sleep1.join();
+	wakeMulti.join();
     }
 
     private Lock conditionLock;
