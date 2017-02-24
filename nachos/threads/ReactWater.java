@@ -72,21 +72,26 @@ public class ReactWater{
     } // end of Makewater()
     
     public static void selfTest(){
+    	Lib.debug(ReactWaterTestChar, "ReactWater.selfTest(): Starting self test.");
     	
-    	//manyHydrogenTest();
-    	//manyOxygenTest();
-    	//hydrogenOxygenTest();
-    	//oxygenHydrogenTest();
+    	manyHydrogenTest();
+    	manyOxygenTest();
+    	hydrogenOxygenTest();
+    	oxygenHydrogenTest();
+    	
+    	Lib.debug(ReactWaterTestChar, "ReactWater.selfTest(): Finished selfTest(), passed.");
     }
     
     public static void manyHydrogenTest(){
     
+    	Lib.debug(ReactWaterTestChar, "ReactWater.manyHydrogenTest(): Starting multiple hydrogen test.");
     	ReactWater manyHydrogenObj = new ReactWater();
     
 		KThread h1 = new KThread();
     	h1.setName("hydrogen 1");
     	h1.setTarget(new Runnable() {
     		public void run(){
+    			Lib.debug(ReactWaterTestChar, "ReactWater.manyHydrogenTest(): hydrogen ready.");
     			manyHydrogenObj.hReady();
     		}
     	});
@@ -96,6 +101,7 @@ public class ReactWater{
     	h2.setName("hydrogen 2");
     	h2.setTarget(new Runnable() {
     		public void run(){
+    			Lib.debug(ReactWaterTestChar, "ReactWater.manyHydrogenTest(): hydrogen ready.");
     			manyHydrogenObj.hReady();
     		}
     	});
@@ -105,6 +111,7 @@ public class ReactWater{
     	h3.setName("hydrogen 3");
     	h3.setTarget(new Runnable() {
     		public void run(){
+    			Lib.debug(ReactWaterTestChar, "ReactWater.manyHydrogenTest(): hydrogen ready.");
     			manyHydrogenObj.hReady();
     		}
     	});
@@ -114,6 +121,7 @@ public class ReactWater{
     	h4.setName("hydrogen 4");
     	h4.setTarget(new Runnable() {
     		public void run(){
+    			Lib.debug(ReactWaterTestChar, "ReactWater.manyHydrogenTest(): hydrogen ready.");
     			manyHydrogenObj.hReady();
     		}
     	});
@@ -123,6 +131,7 @@ public class ReactWater{
     	o1.setName("oxygen 1");
     	o1.setTarget(new Runnable() {
     		public void run(){
+    			Lib.debug(ReactWaterTestChar, "ReactWater.manyHydrogenTest(): oxygen ready.");
     			manyHydrogenObj.oReady();
     		}
     	});
@@ -132,22 +141,25 @@ public class ReactWater{
     	o2.setName("oxygen 2");
     	o2.setTarget(new Runnable() {
     		public void run(){
+    			Lib.debug(ReactWaterTestChar, "ReactWater.manyHydrogenTest(): oxygen ready.");
     			manyHydrogenObj.oReady();
     		}
     	});
     	o2.fork();
 		
-		System.out.println("Multiple hydrogen test succeeded!");
+    	Lib.debug(ReactWaterTestChar, "ReactWater.manyHydrogenTest(): Finished multiple hydrogen test, passed.");
 	}
 	
 	public static void manyOxygenTest(){
     
+    	Lib.debug(ReactWaterTestChar, "ReactWater.manyOxygenTest(): Starting multiple oxygen test.");
     	ReactWater manyOxygenObj = new ReactWater();
     
 		KThread o1 = new KThread();
     	o1.setName("oxygen 1");
     	o1.setTarget(new Runnable() {
     		public void run(){
+    			Lib.debug(ReactWaterTestChar, "ReactWater.manyOxygenTest(): oxygen ready.");
     			manyOxygenObj.oReady();
     		}
     	});
@@ -157,6 +169,7 @@ public class ReactWater{
     	o2.setName("oxygen 2");
     	o2.setTarget(new Runnable() {
     		public void run(){
+    			Lib.debug(ReactWaterTestChar, "ReactWater.manyOxygenTest(): oxygen ready.");
     			manyOxygenObj.oReady();
     		}
     	});
@@ -166,6 +179,7 @@ public class ReactWater{
     	h1.setName("hydrogen 1");
     	h1.setTarget(new Runnable() {
     		public void run(){
+    			Lib.debug(ReactWaterTestChar, "ReactWater.manyOxygenTest(): hydrogen ready.");
     			manyOxygenObj.hReady();
     		}
     	});
@@ -175,6 +189,7 @@ public class ReactWater{
     	h2.setName("hydrogen 2");
     	h2.setTarget(new Runnable() {
     		public void run(){
+    			Lib.debug(ReactWaterTestChar, "ReactWater.manyOxygenTest(): hydrogen ready.");
     			manyOxygenObj.hReady();
     		}
     	});
@@ -184,6 +199,7 @@ public class ReactWater{
     	h3.setName("hydrogen 3");
     	h3.setTarget(new Runnable() {
     		public void run(){
+    			Lib.debug(ReactWaterTestChar, "ReactWater.manyOxygenTest(): hydrogen ready.");
     			manyOxygenObj.hReady();
     		}
     	});
@@ -193,21 +209,25 @@ public class ReactWater{
     	h4.setName("hydrogen 4");
     	h4.setTarget(new Runnable() {
     		public void run(){
+    			Lib.debug(ReactWaterTestChar, "ReactWater.manyOxygenTest(): hydrogen ready.");
     			manyOxygenObj.hReady();
     		}
     	});
     	h4.fork();
 		
-		System.out.println("Multiple oxygen test succeeded!");
+    	Lib.debug(ReactWaterTestChar, "ReactWater.manyOxygenTest(): Finished multiple oxygen test, passed.");
 	}
 	
 	public static void hydrogenOxygenTest(){
+    	
+    	Lib.debug(ReactWaterTestChar, "ReactWater.oxygenHydrogenTest(): Starting hydrogen then oxygen test.");
 		ReactWater h_oTest = new ReactWater();
 		
 		KThread h1 = new KThread();
     	h1.setName("hydrogen 1");
     	h1.setTarget(new Runnable() {
     		public void run(){
+    			Lib.debug(ReactWaterTestChar, "ReactWater.hydrogenOxygenTest(): hydrogen ready.");
     			h_oTest.hReady();
     		}
     	});
@@ -217,21 +237,25 @@ public class ReactWater{
     	o1.setName("oxygen 1");
     	o1.setTarget(new Runnable() {
     		public void run(){
+    			Lib.debug(ReactWaterTestChar, "ReactWater.hydrogenOxygenTest(): oxygen ready.");
     			h_oTest.oReady();
     		}
     	});
     	o1.fork();
 		
-		System.out.println("hydrogenOxygenTest() succeeded!");
+    	Lib.debug(ReactWaterTestChar, "ReactWater.hydrogenOxygenTest(): Finished hydrogen then oxygen test, passed.");
 	}
 	
 	public static void oxygenHydrogenTest(){
+	
+    	Lib.debug(ReactWaterTestChar, "ReactWater.hydrogenOxygenTest(): Starting oxygen then hydrogen test.");
 		ReactWater o_hTest = new ReactWater();
 		
 		KThread o1 = new KThread();
     	o1.setName("oxygen 1");
     	o1.setTarget(new Runnable() {
     		public void run(){
+    			Lib.debug(ReactWaterTestChar, "ReactWater.oxygenHydrogenTest(): oxygen ready.");
     			o_hTest.oReady();
     		}
     	});
@@ -241,13 +265,16 @@ public class ReactWater{
     	h1.setName("hydrogen 1");
     	h1.setTarget(new Runnable() {
     		public void run(){
+    			Lib.debug(ReactWaterTestChar, "ReactWater.oxygenHydrogenTest(): hydrogen ready.");
     			o_hTest.hReady();
     		}
     	});
     	h1.fork();
 		
-		System.out.println("oxygenHydrogenTest() succeeded!");
+    	Lib.debug(ReactWaterTestChar, "ReactWater.oxygenHydrogenTest(): Finished oxygen then hydrogen test, passed.");
 	}
+	
+    private static final char ReactWaterTestChar = 'r';
 } // end of class ReactWater
 
 
