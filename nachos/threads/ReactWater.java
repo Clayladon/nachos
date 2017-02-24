@@ -70,7 +70,89 @@ public class ReactWater{
 		hasMadeWater = true;
 		System.out.println("Water was made!");
     } // end of Makewater()
-
+    
+    public static void selfTest(){
+    	
+    	manyHydrogenTest();
+    	manyOxygenTest();
+    	hydrogenOxygenTest();
+    	
+    }
+    
+    public static void manyHydrogenTest(){
+    
+    	ReactWater manyHydrogenObj = new ReactWater();
+    
+		manyHydrogenObj.hReady();
+		manyHydrogenObj.hReady();
+		manyHydrogenObj.hReady();
+		manyHydrogenObj.hReady();
+		manyHydrogenObj.hReady();
+		manyHydrogenObj.hReady();
+		manyHydrogenObj.hReady();
+		manyHydrogenObj.hReady();
+		manyHydrogenObj.hReady();
+		manyHydrogenObj.hReady();
+	
+		manyHydrogenObj.oReady();
+		manyHydrogenObj.oReady();
+		manyHydrogenObj.oReady();
+		manyHydrogenObj.oReady();
+		manyHydrogenObj.oReady();
+		manyHydrogenObj.oReady();
+		manyHydrogenObj.oReady();
+		manyHydrogenObj.oReady();
+		manyHydrogenObj.oReady();
+		manyHydrogenObj.oReady();
+		
+		System.out.println("Multiple hydrogen test succeeded!");
+	}
+	
+	public static void manyOxygenTest(){
+		ReactWater manyOxygenObj = new ReactWater();
+		
+		manyOxygenObj.oReady();
+		manyOxygenObj.oReady();
+		manyOxygenObj.oReady();
+		manyOxygenObj.oReady();
+		manyOxygenObj.oReady();
+		manyOxygenObj.oReady();
+		manyOxygenObj.oReady();
+		manyOxygenObj.oReady();
+		manyOxygenObj.oReady();
+		manyOxygenObj.oReady();
+		
+		manyOxygenObj.hReady();
+		manyOxygenObj.hReady();
+		manyOxygenObj.hReady();
+		manyOxygenObj.hReady();
+		manyOxygenObj.hReady();
+		manyOxygenObj.hReady();
+		manyOxygenObj.hReady();
+		manyOxygenObj.hReady();
+		manyOxygenObj.hReady();
+		manyOxygenObj.hReady();
+		
+		System.out.println("Multiple oxygen test succeeded!");
+	}
+	
+	public static void hydrogenOxygenTest(){
+		ReactWater test = new ReactWater();
+		
+		test.hReady();
+		test.oReady();
+		
+		System.out.println("hydrogenOxygenTest() succeeded!");
+	}
+	
+	public static void oxygenHydrogenTest(){
+		ReactWater test = new ReactWater();
+		
+		test.oReady();
+		test.hReady();
+		
+		System.out.println("oxygenHydrogenTest() succeeded!");
+	}
 } // end of class ReactWater
 
 
