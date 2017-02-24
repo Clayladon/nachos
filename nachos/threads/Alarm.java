@@ -30,15 +30,15 @@ public class Alarm {
      */
     public void timerInterrupt() {
     
-		/*boolean interruptStatus = Machine.interrupt().disable();
+		boolean interruptStatus = Machine.interrupt().disable();
     	long currentTime = Machine.timer().getTime();
     	
     	while(!waitQueue.isEmpty() && (waitQueue.peek().wakeTime <= currentTime)){
     		waitQueue.poll().waitingThread.ready();
     	}
     	
-		Machine.interrupt().restore(interruptStatus);*/
-		KThread.currentThread().yield();
+		Machine.interrupt().restore(interruptStatus);
+		KThread.yield();
     }
 
     /**
@@ -57,21 +57,15 @@ public class Alarm {
      */
     public void waitUntil(long timeToWait) {
     
-		/*boolean interruptStatus = Machine.interrupt().disable();
+		boolean interruptStatus = Machine.interrupt().disable();
 		
 		long wakeTime = Machine.timer().getTime() + timeToWait;
 		waitingThread waiter = new waitingThread(KThread.currentThread(), wakeTime);
 		
 		waitQueue.add(waiter);
-		KThread.currentThread().sleep();
+		KThread.sleep();
 		
-		Machine.interrupt().restore(interruptStatus);*/
-		
-		
-		// for now, cheat just to get something working (busy waiting is bad)
-		long wakeTime = Machine.timer().getTime() + timeToWait;
-		while (wakeTime > Machine.timer().getTime())
-	    KThread.yield();
+		Machine.interrupt().restore(interruptStatus);
     }
 	
 	
