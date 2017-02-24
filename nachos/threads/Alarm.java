@@ -67,7 +67,43 @@ public class Alarm {
 		
 		Machine.interrupt().restore(interruptStatus);
     }
-	
+
+    public static void selfTest(){
+
+	Alarm clock = new Alarm();
+
+	KThread thread1 = KThread();
+	KThread thread2 = KThread();
+	KThread thread3 = KThread();
+
+	thread1.setTarget(new Runnable(){
+		public void run(){
+
+			clock.waitUntil(10000);
+			thread2.fork();
+			System.out.print("Thread1 done");
+		}
+	});
+	thread2.setTarget(new Runnable(){
+		public void run(){
+
+			clock.waitUntil(10000);
+			thread3.fork();
+			System.out.print("Thread1 done");
+		}
+	});
+	thread3.setTarget(new Runnable(){
+		public void run(){
+
+			clock.waitUntil(10000);
+			System.out.print("Thread1 done");
+		}
+	});
+
+	thread1.fork();
+	thread1.join();
+	thread3.join();
+    }	
 	
 	
 	//Datafields
