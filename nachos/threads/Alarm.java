@@ -115,21 +115,21 @@ public class Alarm {
 	thread1.setTarget(new Runnable(){
 		public void run(){
 
-			clock.waitUntil(200000000);
+			clock.waitUntil(20000000);
 			System.out.println("Thread1 done");
 		}
 	});
 	thread2.setTarget(new Runnable(){
 		public void run(){
 
-			clock.waitUntil(100000000);
+			clock.waitUntil(10000000);
 			System.out.println("Thread2 done");
 		}
 	});
 	thread3.setTarget(new Runnable(){
 		public void run(){
 
-			clock.waitUntil(10000000);
+			clock.waitUntil(1000000);
 			System.out.println("Thread3 done");
 		}
 	});
