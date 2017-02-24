@@ -73,83 +73,178 @@ public class ReactWater{
     
     public static void selfTest(){
     	
-    	manyHydrogenTest();
-    	manyOxygenTest();
-    	hydrogenOxygenTest();
-    	
+    	//manyHydrogenTest();
+    	//manyOxygenTest();
+    	//hydrogenOxygenTest();
+    	//oxygenHydrogenTest();
     }
     
     public static void manyHydrogenTest(){
     
     	ReactWater manyHydrogenObj = new ReactWater();
     
-		manyHydrogenObj.hReady();
-		manyHydrogenObj.hReady();
-		manyHydrogenObj.hReady();
-		manyHydrogenObj.hReady();
-		manyHydrogenObj.hReady();
-		manyHydrogenObj.hReady();
-		manyHydrogenObj.hReady();
-		manyHydrogenObj.hReady();
-		manyHydrogenObj.hReady();
-		manyHydrogenObj.hReady();
-	
-		manyHydrogenObj.oReady();
-		manyHydrogenObj.oReady();
-		manyHydrogenObj.oReady();
-		manyHydrogenObj.oReady();
-		manyHydrogenObj.oReady();
-		manyHydrogenObj.oReady();
-		manyHydrogenObj.oReady();
-		manyHydrogenObj.oReady();
-		manyHydrogenObj.oReady();
-		manyHydrogenObj.oReady();
+		KThread h1 = new KThread();
+    	h1.setName("hydrogen 1");
+    	h1.setTarget(new Runnable() {
+    		public void run(){
+    			manyHydrogenObj.hReady();
+    		}
+    	});
+    	h1.fork();
+    
+		KThread h2 = new KThread();
+    	h2.setName("hydrogen 2");
+    	h2.setTarget(new Runnable() {
+    		public void run(){
+    			manyHydrogenObj.hReady();
+    		}
+    	});
+    	h2.fork();
+    
+		KThread h3 = new KThread();
+    	h3.setName("hydrogen 3");
+    	h3.setTarget(new Runnable() {
+    		public void run(){
+    			manyHydrogenObj.hReady();
+    		}
+    	});
+    	h3.fork();
+    
+		KThread h4 = new KThread();
+    	h4.setName("hydrogen 4");
+    	h4.setTarget(new Runnable() {
+    		public void run(){
+    			manyHydrogenObj.hReady();
+    		}
+    	});
+    	h4.fork();
+    
+		KThread o1 = new KThread();
+    	o1.setName("oxygen 1");
+    	o1.setTarget(new Runnable() {
+    		public void run(){
+    			manyHydrogenObj.oReady();
+    		}
+    	});
+    	o1.fork();
+    
+		KThread o2 = new KThread();
+    	o2.setName("oxygen 2");
+    	o2.setTarget(new Runnable() {
+    		public void run(){
+    			manyHydrogenObj.oReady();
+    		}
+    	});
+    	o2.fork();
 		
 		System.out.println("Multiple hydrogen test succeeded!");
 	}
 	
 	public static void manyOxygenTest(){
-		ReactWater manyOxygenObj = new ReactWater();
-		
-		manyOxygenObj.oReady();
-		manyOxygenObj.oReady();
-		manyOxygenObj.oReady();
-		manyOxygenObj.oReady();
-		manyOxygenObj.oReady();
-		manyOxygenObj.oReady();
-		manyOxygenObj.oReady();
-		manyOxygenObj.oReady();
-		manyOxygenObj.oReady();
-		manyOxygenObj.oReady();
-		
-		manyOxygenObj.hReady();
-		manyOxygenObj.hReady();
-		manyOxygenObj.hReady();
-		manyOxygenObj.hReady();
-		manyOxygenObj.hReady();
-		manyOxygenObj.hReady();
-		manyOxygenObj.hReady();
-		manyOxygenObj.hReady();
-		manyOxygenObj.hReady();
-		manyOxygenObj.hReady();
+    
+    	ReactWater manyOxygenObj = new ReactWater();
+    
+		KThread o1 = new KThread();
+    	o1.setName("oxygen 1");
+    	o1.setTarget(new Runnable() {
+    		public void run(){
+    			manyOxygenObj.oReady();
+    		}
+    	});
+    	o1.fork();
+    
+		KThread o2 = new KThread();
+    	o2.setName("oxygen 2");
+    	o2.setTarget(new Runnable() {
+    		public void run(){
+    			manyOxygenObj.oReady();
+    		}
+    	});
+    	o2.fork();
+    
+		KThread h1 = new KThread();
+    	h1.setName("hydrogen 1");
+    	h1.setTarget(new Runnable() {
+    		public void run(){
+    			manyOxygenObj.hReady();
+    		}
+    	});
+    	h1.fork();
+    
+		KThread h2 = new KThread();
+    	h2.setName("hydrogen 2");
+    	h2.setTarget(new Runnable() {
+    		public void run(){
+    			manyOxygenObj.hReady();
+    		}
+    	});
+    	h2.fork();
+    
+		KThread h3 = new KThread();
+    	h3.setName("hydrogen 3");
+    	h3.setTarget(new Runnable() {
+    		public void run(){
+    			manyOxygenObj.hReady();
+    		}
+    	});
+    	h3.fork();
+    
+		KThread h4 = new KThread();
+    	h4.setName("hydrogen 4");
+    	h4.setTarget(new Runnable() {
+    		public void run(){
+    			manyOxygenObj.hReady();
+    		}
+    	});
+    	h4.fork();
 		
 		System.out.println("Multiple oxygen test succeeded!");
 	}
 	
 	public static void hydrogenOxygenTest(){
-		ReactWater test = new ReactWater();
+		ReactWater h_oTest = new ReactWater();
 		
-		test.hReady();
-		test.oReady();
+		KThread h1 = new KThread();
+    	h1.setName("hydrogen 1");
+    	h1.setTarget(new Runnable() {
+    		public void run(){
+    			h_oTest.hReady();
+    		}
+    	});
+    	h1.fork();
+		
+		KThread o1 = new KThread();
+    	o1.setName("oxygen 1");
+    	o1.setTarget(new Runnable() {
+    		public void run(){
+    			h_oTest.oReady();
+    		}
+    	});
+    	o1.fork();
 		
 		System.out.println("hydrogenOxygenTest() succeeded!");
 	}
 	
 	public static void oxygenHydrogenTest(){
-		ReactWater test = new ReactWater();
+		ReactWater o_hTest = new ReactWater();
 		
-		test.oReady();
-		test.hReady();
+		KThread o1 = new KThread();
+    	o1.setName("oxygen 1");
+    	o1.setTarget(new Runnable() {
+    		public void run(){
+    			o_hTest.oReady();
+    		}
+    	});
+    	o1.fork();
+		
+		KThread h1 = new KThread();
+    	h1.setName("hydrogen 1");
+    	h1.setTarget(new Runnable() {
+    		public void run(){
+    			o_hTest.hReady();
+    		}
+    	});
+    	h1.fork();
 		
 		System.out.println("oxygenHydrogenTest() succeeded!");
 	}
