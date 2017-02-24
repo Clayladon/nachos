@@ -1,0 +1,47 @@
+Group 03
+
+Henri-Philippe Marceau
+Kaelan Renault
+Kaitlynn Anderson-Butcher
+
+
+First, build & compile nachos. This is done by calling
+the make command in the proj1 directory. This creates
+an executable named nachos in the proj1 directory. Run
+this executable to run nachos.
+
+Nachos runs selfTest() methods, covering many test cases,
+for the following classes:
+
+- KThread.java
+- Condition2.java
+- Alarm.java
+- Communicator.java
+- ReactWater.java
+
+These selfTest() methods produce no visible output by
+default. Their output is made visible by enabling their
+respective debug flags. This is accomplished by using the
+-d command line option and listing the flags of interest
+as an argument. The flags are listed with their respective
+classes below:
+
+- k	KThread.java
+- c	Condition2.java
+- a	Alarm.java
+- C	Communicator.java
+- r	ReactWater.java
+
+For example, if someone was interested in the KThread
+selfTest() output, they would enter the following:
+
+nachos -d k
+
+Alternatively, one could wish to see the output of the
+selfTest() methods of multiple classes. They would then
+enter the following:
+
+nachos -d ac	//where 'ac' could be any combination of
+		//the debug flags: k, c, a, C, r.
+
+
