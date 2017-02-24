@@ -69,80 +69,90 @@ public class Alarm {
     }
 
     public static void selfTest(){
+		Lib.debug(AlarmTestChar, "Alarm.selfTest(): Starting self test.");
 
-	Alarm clock = new Alarm();
-	//Stack multiple waiters with the same timeToWait
-	//The threads should finish in the order they were
-	//called.
-	KThread threadA = new KThread();
-	KThread threadB = new KThread();
-	KThread threadC = new KThread();
+		Alarm clock = new Alarm();
+		//Stack multiple waiters with the same timeToWait
+		//The threads should finish in the order they were
+		//called.
+		KThread threadA = new KThread();
+		KThread threadB = new KThread();
+		KThread threadC = new KThread();
+		Lib.debug(AlarmTestChar, "Alarm.selfTest(): Alarm (clock) and three threads (A,B,C) created.");
+		
+		threadA.setTarget(new Runnable(){
+			public void run(){
+				Lib.debug(AlarmTestChar, "Alarm.selfTest(): Thread A waiting.");
+				clock.waitUntil(10000000);
+				Lib.debug(AlarmTestChar, "Alarm.selfTest(): Thread A finished.");
+			}
+		});
+		threadB.setTarget(new Runnable(){
+			public void run(){
+				Lib.debug(AlarmTestChar, "Alarm.selfTest(): Thread B waiting.");
+				clock.waitUntil(10000000);	
+				Lib.debug(AlarmTestChar, "Alarm.selfTest(): Thread B finished.");
+			}
+		});
+		threadC.setTarget(new Runnable(){
+			public void run(){
+				Lib.debug(AlarmTestChar, "Alarm.selfTest(): Thread C waiting.");
+				clock.waitUntil(10000000);
+				Lib.debug(AlarmTestChar, "Alarm.selfTest(): Thread C finished.");
+			}
+		});
 
-	threadA.setTarget(new Runnable(){
-		public void run(){
+		Lib.debug(AlarmTestChar, "Alarm.selfTest(): Forking threads A, B, and C.");
+		threadA.fork();
+		threadB.fork();
+		threadC.fork();
+		threadC.join();
+		
+		Lib.debug(AlarmTestChar, "Alarm.selfTest(): Alarm test with same wait times finished.");
+		//Stack waiters with differing timeToWait
+		//The threads should finish in the order
+		//dictated by their timeToWait
+		KThread thread1 = new KThread();
+		KThread thread2 = new KThread();
+		KThread thread3 = new KThread();
+		Lib.debug(AlarmTestChar, "Alarm.selfTest(): Three threads (1,2,3) created.");
 
-			clock.waitUntil(10000000);
-			System.out.println("ThreadA done");
-		}
-	});
-	threadB.setTarget(new Runnable(){
-		public void run(){
+		thread1.setTarget(new Runnable(){
+			public void run(){
+				Lib.debug(AlarmTestChar, "Alarm.selfTest(): Thread 1 waiting.");
+				clock.waitUntil(20000000);
+				Lib.debug(AlarmTestChar, "Alarm.selfTest(): Thread 1 finished.");
+			}
+		});
+		thread2.setTarget(new Runnable(){
+			public void run(){
+				Lib.debug(AlarmTestChar, "Alarm.selfTest(): Thread 2 waiting.");
+				clock.waitUntil(10000000);
+				Lib.debug(AlarmTestChar, "Alarm.selfTest(): Thread 2 finished.");
+			}
+		});
+		thread3.setTarget(new Runnable(){
+			public void run(){
+				Lib.debug(AlarmTestChar, "Alarm.selfTest(): Thread 3 waiting.");
+				clock.waitUntil(1000000);
+				Lib.debug(AlarmTestChar, "Alarm.selfTest(): Thread 3 finished.");
+			}
+		});
 
-			clock.waitUntil(10000000);
-			System.out.println("ThreadB done");
-		}
-	});
-	threadC.setTarget(new Runnable(){
-		public void run(){
-
-			clock.waitUntil(10000000);
-			System.out.println("ThreadC done");
-		}
-	});
-
-	threadA.fork();
-	threadB.fork();
-	threadC.fork();
-	threadC.join();
-
-	//Stack waiters with differing timeToWait
-	//The threads should finish in the order
-	//dictated by their timeToWait
-	KThread thread1 = new KThread();
-	KThread thread2 = new KThread();
-	KThread thread3 = new KThread();
-
-	thread1.setTarget(new Runnable(){
-		public void run(){
-
-			clock.waitUntil(20000000);
-			System.out.println("Thread1 done");
-		}
-	});
-	thread2.setTarget(new Runnable(){
-		public void run(){
-
-			clock.waitUntil(10000000);
-			System.out.println("Thread2 done");
-		}
-	});
-	thread3.setTarget(new Runnable(){
-		public void run(){
-
-			clock.waitUntil(1000000);
-			System.out.println("Thread3 done");
-		}
-	});
-
-	thread1.fork();
-	thread2.fork();
-	thread3.fork();
-	thread1.join();
+		Lib.debug(AlarmTestChar, "Alarm.selfTest(): Forking threads 1, 2, and 3.");
+		thread1.fork();
+		thread2.fork();
+		thread3.fork();
+		thread1.join();
+		
+		Lib.debug(AlarmTestChar, "Alarm.selfTest(): Alarm test with different wait times finished.");
+		Lib.debug(AlarmTestChar, "Alarm.selfTest(): Finished selfTest(), passed.");
     }	
 	
 	
 	//Datafields
 	private PriorityQueue<waitingThread> waitQueue = new PriorityQueue<waitingThread>();
+	private static final char AlarmTestChar = 'a';
 	
 	
 	
