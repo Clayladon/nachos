@@ -88,104 +88,122 @@ public class Condition2 {
     }
 
     public static void selfTest(){
-
-	Lock lock = new Lock();
-	Condition2 tester = new Condition2(lock);
+		Lib.debug(Condition2TestChar, "Condition2.selfTest(): Starting self test.");
+		
+		Lock lock = new Lock();
+		Condition2 tester = new Condition2(lock);
+		
+		Lib.debug(Condition2TestChar, "Condition2.selfTest(): Lock (lock), Condition2 (tester) created.");
 	
-	//Testing the wake & sleep methods
-	KThread sleeper = new KThread();
-	KThread waker = new KThread();
-	sleeper.setTarget(new Runnable(){
-		public void run(){
-				System.out.println("Start");
+		//Testing the wake & sleep methods
+		KThread sleeper = new KThread();
+		KThread waker = new KThread();
+		
+		Lib.debug(Condition2TestChar, "Condition2.selfTest(): Two threads created, sleeper and waker.");
+		sleeper.setTarget(new Runnable(){
+			public void run(){
+				Lib.debug(Condition2TestChar, "Condition2.selfTest(): Sleeper starting.");
 				lock.acquire();
-				System.out.println("Acquired lock, putting to sleep.");
+				Lib.debug(Condition2TestChar, "Condition2.selfTest(): Sleeper acquired lock.");
 				waker.fork();
+				Lib.debug(Condition2TestChar, "Condition2.selfTest(): Sleeper about to sleep.");
 				tester.sleep();
-				System.out.println("Woke up. Releasing lock.");
 				tester.wake();
+				Lib.debug(Condition2TestChar, "Condition2.selfTest(): Sleeper woke up, releasing lock.");
 				lock.release();	
-			}
-		});
-	waker.setTarget(new Runnable(){
-		public void run(){
+				}
+			});
+		waker.setTarget(new Runnable(){
+			public void run(){
 
-			lock.acquire();
+				Lib.debug(Condition2TestChar, "Condition2.selfTest(): Waker starting.");
+				lock.acquire();
+				Lib.debug(Condition2TestChar, "Condition2.selfTest(): Waker acquired lock.");
 			
-			if(tester.waitQueue.isEmpty())
-				System.out.println("Empty waitQueue");
-			else
-				System.out.println("Not empty waitQueue");
+				if(tester.waitQueue.isEmpty())
+					Lib.debug(Condition2TestChar, "Condition2.selfTest(): Tester's waitQueue is empty.");
+				else
+					Lib.debug(Condition2TestChar, "Condition2.selfTest(): Tester's waitQueue is not empty.");
 		
-			tester.wake();
-
-			tester.sleep();
-		
-			if(tester.waitQueue.isEmpty())
-				System.out.println("Empty waitQueue");
-			else
-				System.out.println("Not empty waitQueue");
-
-
-			tester.wake();	//Testing if wake can handle an empty
-					//waitQueue	
-			lock.release();
-		}
-	});
-		sleeper.fork();
-		sleeper.join();
-
-	//Testing multiple sleeps & the wakeAll method
-
-
-	KThread sleep1 = new KThread();
-	KThread sleep2 = new KThread();
-	KThread sleep3 = new KThread();
-	KThread wakeMulti = new KThread();
-	
-	sleep1.setTarget(new Runnable(){
-		public void run(){
-				lock.acquire();
-				sleep2.fork();
-				tester.sleep();
-				System.out.println("Sleep1 woke up.");
-				lock.release();	
-			}
-		});
-	sleep2.setTarget(new Runnable(){
-		public void run(){
-				lock.acquire();
-				sleep3.fork();
-				tester.sleep();
-				System.out.println("Sleep2 woke up.");
-				lock.release();	
-			}
-		});
-	sleep3.setTarget(new Runnable(){
-		public void run(){
-				lock.acquire();
-				wakeMulti.fork();
-				tester.sleep();
-				System.out.println("Sleep3 woke up");
 				tester.wake();
-				lock.release();	
+
+				tester.sleep();
+		
+				if(tester.waitQueue.isEmpty())
+					Lib.debug(Condition2TestChar, "Condition2.selfTest(): Tester's waitQueue is empty.");
+				else
+					Lib.debug(Condition2TestChar, "Condition2.selfTest(): Tester's waitQueue is not empty");
+
+
+				tester.wake();	//Testing if wake can handle an empty
+								//waitQueue	
+				lock.release();
 			}
 		});
-	wakeMulti.setTarget(new Runnable(){
-		public void run(){
-			lock.acquire();
-			tester.wakeAll();
-			tester.sleep();
-			System.out.println("wakeMulti finished.");
-			lock.release();
-		}
-	});
+			sleeper.fork();
+			sleeper.join();
 
-	sleep1.fork();
-	sleep1.join();
-	wakeMulti.join();
+		//Testing multiple sleeps & the wakeAll method
+
+
+		Lib.debug(Condition2TestChar, "Condition2.selfTest(): Starting multiple wake test.");
+		KThread sleep1 = new KThread();
+		KThread sleep2 = new KThread();
+		KThread sleep3 = new KThread();
+		KThread wakeMulti = new KThread();
+		Lib.debug(Condition2TestChar, "Condition2.selfTest(): Three threads (sleep1, sleep2, sleep3)"
+										+" and thread (wakeMulti) created.");
+	
+		sleep1.setTarget(new Runnable(){
+			public void run(){
+					lock.acquire();
+					sleep2.fork();
+					Lib.debug(Condition2TestChar, "Condition2.selfTest(): Sleep1 sleeping.");
+					tester.sleep();
+					Lib.debug(Condition2TestChar, "Condition2.selfTest(): Sleep1 woke up.");
+					lock.release();	
+				}
+			});
+		sleep2.setTarget(new Runnable(){
+			public void run(){
+					lock.acquire();
+					sleep3.fork();
+					Lib.debug(Condition2TestChar, "Condition2.selfTest(): Sleep2 sleeping.");
+					tester.sleep();
+					Lib.debug(Condition2TestChar, "Condition2.selfTest(): Sleep2 woke up.");
+					lock.release();	
+				}
+			});
+		sleep3.setTarget(new Runnable(){
+			public void run(){
+					lock.acquire();
+					wakeMulti.fork();
+					Lib.debug(Condition2TestChar, "Condition2.selfTest(): Sleep3 sleeping.");
+					tester.sleep();
+					Lib.debug(Condition2TestChar, "Condition2.selfTest(): Sleep3 woke up.");
+					tester.wake();
+					lock.release();	
+				}
+			});
+		wakeMulti.setTarget(new Runnable(){
+			public void run(){
+				lock.acquire();
+				Lib.debug(Condition2TestChar, "Condition2.selfTest(): WakeMulti started.");
+				tester.wakeAll();
+				tester.sleep();
+				Lib.debug(Condition2TestChar, "Condition2.selfTest(): WakeMulti finished.");
+				lock.release();
+			}
+		});
+
+		sleep1.fork();
+		sleep1.join();
+		wakeMulti.join();
+		
+		Lib.debug(Condition2TestChar, "Condiiton2.selfTest(): Finished selfTest(), passed.");
     }
 
     private Lock conditionLock;
     private LinkedBlockingQueue<KThread> waitQueue;
+    private static final char Condition2TestChar = 'c';
 }
