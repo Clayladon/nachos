@@ -78,7 +78,7 @@ public class Communicator {
     
     public static void selfTest(){
     	//manySpeakers();
-    	manyListeners();
+    	//manyListeners();
     	//speakerListenerTest();
     	//listenerSpeakerTest();
     	
@@ -136,7 +136,7 @@ public class Communicator {
     	thread6.setName("thread 6");
     	thread6.setTarget(new Runnable() {
     		public void run(){
-    			manySpeakersComm.listen();
+    			System.out.println(manySpeakersComm.listen());
     		}
     	});
     	thread6.fork();
@@ -145,7 +145,7 @@ public class Communicator {
     	thread7.setName("thread 7");
     	thread7.setTarget(new Runnable() {
     		public void run(){
-    			manySpeakersComm.listen();
+    			System.out.println(manySpeakersComm.listen());
     		}
     	});
     	thread7.fork();
@@ -154,7 +154,7 @@ public class Communicator {
     	thread8.setName("thread 8");
     	thread8.setTarget(new Runnable() {
     		public void run(){
-    			manySpeakersComm.listen();
+    			System.out.println(manySpeakersComm.listen());
     		}
     	});
     	thread8.fork();
@@ -163,7 +163,7 @@ public class Communicator {
     	thread9.setName("thread 9");
     	thread9.setTarget(new Runnable() {
     		public void run(){
-    			manySpeakersComm.listen();
+    			System.out.println(manySpeakersComm.listen());
     		}
     	});
     	thread9.fork();
@@ -172,7 +172,7 @@ public class Communicator {
     	thread10.setName("thread 10");
     	thread10.setTarget(new Runnable() {
     		public void run(){
-    			manySpeakersComm.listen();
+    			System.out.println(manySpeakersComm.listen());
     		}
     	});
     	thread10.fork();
