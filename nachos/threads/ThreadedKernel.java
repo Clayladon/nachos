@@ -48,8 +48,8 @@ public class ThreadedKernel extends Kernel {
     public void selfTest() {
 	Condition2.selfTest();
 	KThread.selfTest();
-	//Communicator.selfTest();
-	//ReactWater.selfTest();
+	Communicator.selfTest();
+	ReactWater.selfTest();
 	Semaphore.selfTest();
 	SynchList.selfTest();
 	if (Machine.bank() != null) {
