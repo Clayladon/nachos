@@ -100,7 +100,6 @@ public class Communicator {
     			manySpeakersComm.speak(1);
     		}
     	});
-    	thread1.fork();
     	
     	KThread thread2 = new KThread();
     	Lib.debug(CommunicatorTestChar, "Communicator.manySpeakers(): thread (thread2) created.");
@@ -111,7 +110,6 @@ public class Communicator {
     			manySpeakersComm.speak(2);
     		}
     	});
-    	thread2.fork();
     	
     	KThread thread3 = new KThread();
     	Lib.debug(CommunicatorTestChar, "Communicator.manySpeakers(): thread (thread3) created.");
@@ -122,7 +120,6 @@ public class Communicator {
     			manySpeakersComm.speak(3);
     		}
     	});
-    	thread3.fork();
     	
     	KThread thread4 = new KThread();
     	Lib.debug(CommunicatorTestChar, "Communicator.manySpeakers(): thread (thread4) created.");
@@ -133,7 +130,6 @@ public class Communicator {
     			manySpeakersComm.speak(4);
     		}
     	});
-    	thread4.fork();
     	
     	KThread thread5 = new KThread();
     	Lib.debug(CommunicatorTestChar, "Communicator.manySpeakers(): thread (thread5) created.");
@@ -144,7 +140,6 @@ public class Communicator {
     			manySpeakersComm.speak(5);
     		}
     	});
-    	thread5.fork();
     	
     	KThread thread6 = new KThread();
     	Lib.debug(CommunicatorTestChar, "Communicator.manySpeakers(): thread (thread6) created.");
@@ -155,7 +150,6 @@ public class Communicator {
     												+ manySpeakersComm.listen() + ".");
     		}
     	});
-    	thread6.fork();
     	
     	KThread thread7 = new KThread();
     	Lib.debug(CommunicatorTestChar, "Communicator.manySpeakers(): thread (thread7) created.");
@@ -166,7 +160,6 @@ public class Communicator {
     												+ manySpeakersComm.listen() + ".");
     		}
     	});
-    	thread7.fork();
     	
     	KThread thread8 = new KThread();
     	Lib.debug(CommunicatorTestChar, "Communicator.manySpeakers(): thread (thread8) created.");
@@ -177,7 +170,6 @@ public class Communicator {
     												+ manySpeakersComm.listen() + ".");
     		}
     	});
-    	thread8.fork();
     	
     	KThread thread9 = new KThread();
     	Lib.debug(CommunicatorTestChar, "Communicator.manySpeakers(): thread (thread9) created.");
@@ -188,7 +180,6 @@ public class Communicator {
     												+ manySpeakersComm.listen() + ".");
     		}
     	});
-    	thread9.fork();
     	
     	KThread thread10 = new KThread();
     	Lib.debug(CommunicatorTestChar, "Communicator.manySpeakers(): thread (thread10) created.");
@@ -199,8 +190,28 @@ public class Communicator {
     												+ manySpeakersComm.listen() + ".");
     		}
     	});
-    	thread10.fork();
-    	
+
+	thread1.fork();
+	thread2.fork();
+	thread3.fork();
+	thread4.fork();
+	thread5.fork();
+	thread6.fork();
+	thread7.fork();
+	thread8.fork();
+	thread9.fork();
+	thread10.fork();
+	thread1.join();
+	thread2.join();
+	thread3.join();
+	thread4.join();
+	thread5.join();
+	thread6.join();
+	thread7.join();
+	thread8.join();
+	thread9.join();
+	thread10.join();
+
     	Lib.debug(CommunicatorTestChar, "Communicator.manySpeakers(): Finished multiple speaker test, passed.");
     	
     }
@@ -219,7 +230,6 @@ public class Communicator {
     												+ manyListenersComm.listen() + ".");
     		}
     	});
-    	thread1.fork();
     	
     	KThread thread2 = new KThread();
     	Lib.debug(CommunicatorTestChar, "Communicator.manyListeners(): thread (thread2) created.");
@@ -231,7 +241,6 @@ public class Communicator {
     												+ manyListenersComm.listen() + ".");
     		}
     	});
-    	thread2.fork();
     	
     	KThread thread3 = new KThread();
     	thread3.setName("thread 3");
@@ -243,7 +252,6 @@ public class Communicator {
     												+ manyListenersComm.listen() + ".");
     		}
     	});
-    	thread3.fork();
     	
     	KThread thread4 = new KThread();
     	Lib.debug(CommunicatorTestChar, "Communicator.manyListeners(): thread (thread4) created.");
@@ -255,7 +263,6 @@ public class Communicator {
     												+ manyListenersComm.listen() + ".");
     		}
     	});
-    	thread4.fork();
     	
     	KThread thread5 = new KThread();
     	Lib.debug(CommunicatorTestChar, "Communicator.manyListeners(): thread (thread5) created.");
@@ -267,7 +274,6 @@ public class Communicator {
     												+ manyListenersComm.listen() + ".");
     		}
     	});
-    	thread5.fork();
     	
     	KThread thread6 = new KThread();
     	Lib.debug(CommunicatorTestChar, "Communicator.manyListeners(): thread (thread6) created.");
@@ -278,7 +284,6 @@ public class Communicator {
     			manyListenersComm.speak(6);
     		}
     	});
-    	thread6.fork();
     	
     	KThread thread7 = new KThread();
     	Lib.debug(CommunicatorTestChar, "Communicator.manyListeners(): thread (thread7) created.");
@@ -289,7 +294,6 @@ public class Communicator {
     			manyListenersComm.speak(7);
     		}
     	});
-    	thread7.fork();
     	
     	KThread thread8 = new KThread();
     	Lib.debug(CommunicatorTestChar, "Communicator.manyListeners(): thread (thread8) created.");
@@ -300,7 +304,6 @@ public class Communicator {
     			manyListenersComm.speak(8);
     		}
     	});
-    	thread8.fork();
     	
     	KThread thread9 = new KThread();
     	Lib.debug(CommunicatorTestChar, "Communicator.manyListeners(): thread (thread9) created.");
@@ -311,7 +314,6 @@ public class Communicator {
     			manyListenersComm.speak(9);
     		}
     	});
-    	thread9.fork();
     	
     	KThread thread10 = new KThread();
     	Lib.debug(CommunicatorTestChar, "Communicator.manyListeners(): thread (thread10) created.");
@@ -322,7 +324,27 @@ public class Communicator {
     			manyListenersComm.speak(10);
     		}
     	});
+
+	thread1.fork();
+	thread2.fork();
+	thread3.fork();
+	thread4.fork();
+	thread5.fork();
+	thread6.fork();
+	thread7.fork();
+	thread8.fork();
+	thread9.fork();
     	thread10.fork();
+	thread1.join();
+	thread2.join();
+	thread3.join();
+	thread4.join();
+	thread5.join();
+	thread6.join();
+	thread7.join();
+	thread8.join();
+	thread9.join();
+	thread10.join();
     	
     	Lib.debug(CommunicatorTestChar, "Communicator.manyListeners(): Finished multiple listener test, passed.");
     
@@ -342,7 +364,6 @@ public class Communicator {
     			tester.speak(321);
     		}
     	});
-    	thread1.fork();
     	
     	KThread thread2 = new KThread();
     	Lib.debug(CommunicatorTestChar, "Communicator.speakerListenerTest(): thread (thread2) created.");
@@ -354,8 +375,11 @@ public class Communicator {
     			tester.listen();
     		}
     	});
-    	thread2.fork();
     	
+	thread1.fork();
+	thread2.fork();
+	thread1.join();
+	
     	Lib.debug(CommunicatorTestChar, "Communicator.speakerListenerTest(): Finished speaker then listener test, passed.");
     }
     
@@ -374,7 +398,6 @@ public class Communicator {
     												+ tester.listen() + ".");
     		}
     	});
-    	thread1.fork();
     	
     	
     	KThread thread2 = new KThread();
@@ -386,8 +409,11 @@ public class Communicator {
     			tester.speak(123);
     		}
     	});
-    	thread2.fork();
-    	
+    
+	thread1.fork();
+	thread2.fork();
+	thread1.join();
+	
     	Lib.debug(CommunicatorTestChar, "Communicator.listenerSpeakerTest(): Finished listener then speaker test, passed.");
     }
     
