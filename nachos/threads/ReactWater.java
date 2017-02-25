@@ -4,6 +4,7 @@ import nachos.machine.*;
 
 public class ReactWater{
 	//Datafield declaration
+    private static final char ReactWaterTestChar = 'r';
 	Lock lock;
 	Condition2 hydrogen;
 	Condition2 oxygen;
@@ -91,22 +92,31 @@ public class ReactWater{
 		System.out.println("Water was made!");
     } // end of Makewater()
     
+    /**
+     * Tests whether this module is working
+     */
     public static void selfTest(){
     	Lib.debug(ReactWaterTestChar, "ReactWater.selfTest(): Starting self test.");
     	
+    	//Each test is broken into it's own method that is called in turn
     	manyHydrogenTest();
     	manyOxygenTest();
-    	//hydrogenOxygenTest();
-    	//oxygenHydrogenTest();
     	
     	Lib.debug(ReactWaterTestChar, "ReactWater.selfTest(): Finished selfTest(), passed.");
     }
     
+    /**
+     * Tests whether the ReactWater system can handle a surplus of hydrogen before
+     * receiving any oxygen atoms. This should be the case as hydrogen is put to
+     * sleep until the appropriate number of atoms exists to make water
+     */
     public static void manyHydrogenTest(){
     
     	Lib.debug(ReactWaterTestChar, "ReactWater.manyHydrogenTest(): Starting multiple hydrogen test.");
+		//Create a ReactWater object
     	ReactWater manyHydrogenObj = new ReactWater();
     
+    	//Create 4 hydrogen threads that will call hReady() when they're forked
 		KThread h1 = new KThread();
     	h1.setName("hydrogen 1");
     	h1.setTarget(new Runnable() {
@@ -143,6 +153,7 @@ public class ReactWater{
     		}
     	});
     
+    	//Create 2 oxygen threads that will call oReady() when they're forked
 		KThread o1 = new KThread();
     	o1.setName("oxygen 1");
     	o1.setTarget(new Runnable() {
@@ -167,22 +178,28 @@ public class ReactWater{
     	h4.fork();
     	o1.fork();
     	o2.fork();
-    	
     	h1.join();
     	h2.join();
     	h3.join();
-    	//h4.join();
     	o1.join();
     	o2.join();
 		
     	Lib.debug(ReactWaterTestChar, "ReactWater.manyHydrogenTest(): Finished multiple hydrogen test, passed.");
 	}
-	
+    
+    /**
+     * Tests whether the ReactWater system can handle a surplus of oxygen before
+     * receiving any hydrogen atoms. This should be the case as oxygen is put to
+     * sleep until the appropriate number of atoms exists to make water and the
+     * first hydrogen atom of the transaction calls it to wake.
+     */
 	public static void manyOxygenTest(){
     
     	Lib.debug(ReactWaterTestChar, "ReactWater.manyOxygenTest(): Starting multiple oxygen test.");
+		//Create a ReactWater object
     	ReactWater manyOxygenObj = new ReactWater();
     
+    	//Create 2 oxygen threads that will call oReady() when they're forked
 		KThread o1 = new KThread();
     	o1.setName("oxygen 1");
     	o1.setTarget(new Runnable() {
@@ -200,7 +217,8 @@ public class ReactWater{
     			manyOxygenObj.oReady();
     		}
     	});
-    
+    	
+    	//Create 4 hydrogen threads that will call hReady() when they're forked
 		KThread h1 = new KThread();
     	h1.setName("hydrogen 1");
     	h1.setTarget(new Runnable() {
@@ -243,7 +261,6 @@ public class ReactWater{
     	h2.fork();
     	h3.fork();
     	h4.fork();
-    	
     	o1.join();
     	o2.join();
     	h1.join();
@@ -253,68 +270,6 @@ public class ReactWater{
 		
     	Lib.debug(ReactWaterTestChar, "ReactWater.manyOxygenTest(): Finished multiple oxygen test, passed.");
 	}
-	
-	public static void hydrogenOxygenTest(){
-    	
-    	Lib.debug(ReactWaterTestChar, "ReactWater.oxygenHydrogenTest(): Starting hydrogen then oxygen test.");
-		ReactWater h_oTest = new ReactWater();
-		
-		KThread h1 = new KThread();
-    	h1.setName("hydrogen 1");
-    	h1.setTarget(new Runnable() {
-    		public void run(){
-    			Lib.debug(ReactWaterTestChar, "ReactWater.hydrogenOxygenTest(): hydrogen ready.");
-    			h_oTest.hReady();
-    		}
-    	});
-		
-		KThread o1 = new KThread();
-    	o1.setName("oxygen 1");
-    	o1.setTarget(new Runnable() {
-    		public void run(){
-    			Lib.debug(ReactWaterTestChar, "ReactWater.hydrogenOxygenTest(): oxygen ready.");
-    			h_oTest.oReady();
-    		}
-    	});
-    	
-    	h1.fork();
-    	o1.fork();
-    	h1.join();
-		
-    	Lib.debug(ReactWaterTestChar, "ReactWater.hydrogenOxygenTest(): Finished hydrogen then oxygen test, passed.");
-	}
-	
-	public static void oxygenHydrogenTest(){
-	
-    	Lib.debug(ReactWaterTestChar, "ReactWater.hydrogenOxygenTest(): Starting oxygen then hydrogen test.");
-		ReactWater o_hTest = new ReactWater();
-		
-		KThread o1 = new KThread();
-    	o1.setName("oxygen 1");
-    	o1.setTarget(new Runnable() {
-    		public void run(){
-    			Lib.debug(ReactWaterTestChar, "ReactWater.oxygenHydrogenTest(): oxygen ready.");
-    			o_hTest.oReady();
-    		}
-    	});
-		
-		KThread h1 = new KThread();
-    	h1.setName("hydrogen 1");
-    	h1.setTarget(new Runnable() {
-    		public void run(){
-    			Lib.debug(ReactWaterTestChar, "ReactWater.oxygenHydrogenTest(): hydrogen ready.");
-    			o_hTest.hReady();
-    		}
-    	});
-    	
-    	o1.fork();
-    	h1.fork();
-    	o1.join();
-		
-    	Lib.debug(ReactWaterTestChar, "ReactWater.oxygenHydrogenTest(): Finished oxygen then hydrogen test, passed.");
-	}
-	
-    private static final char ReactWaterTestChar = 'r';
 } // end of class ReactWater
 
 
