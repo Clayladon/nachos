@@ -179,7 +179,6 @@ public class ReactWater{
     	o1.fork();
     	o2.fork();
     	h1.join();
-    	h3.join();
 		
     	Lib.debug(ReactWaterTestChar, "ReactWater.manyHydrogenTest(): Finished multiple hydrogen test, passed.");
 	}
