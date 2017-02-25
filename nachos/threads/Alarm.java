@@ -30,9 +30,10 @@ public class Alarm {
      */
     public void timerInterrupt() {
     
-		boolean interruptStatus = Machine.interrupt().disable();
+	boolean interruptStatus = Machine.interrupt().disable();
     	long currentTime = Machine.timer().getTime();
     	
+	//All waiting thread's whose timeToWait has expired are readied
     	while(!waitQueue.isEmpty() && (waitQueue.peek().wakeTime <= currentTime)){
     		waitQueue.poll().waitingThread.ready();
     	}
@@ -60,6 +61,8 @@ public class Alarm {
 		boolean interruptStatus = Machine.interrupt().disable();
 		
 		long wakeTime = Machine.timer().getTime() + timeToWait;
+		
+		//Store the KThread & its wakeTime in a waitingThread object
 		waitingThread waiter = new waitingThread(KThread.currentThread(), wakeTime);
 		
 		waitQueue.add(waiter);
@@ -68,6 +71,11 @@ public class Alarm {
 		Machine.interrupt().restore(interruptStatus);
     }
 
+    /* SelfTest(), this method tests to make sure that threads are put
+     * to sleep and awoken in the proper order. The order being dictated
+     * by each thread's timeToWait instead of the order in which the threads
+     * were put to sleep.
+    */
     public static void selfTest(){
 		Lib.debug(AlarmTestChar, "Alarm.selfTest(): Starting self test.");
 
@@ -117,6 +125,7 @@ public class Alarm {
 		KThread thread3 = new KThread();
 		Lib.debug(AlarmTestChar, "Alarm.selfTest(): Three threads (1,2,3) created.");
 
+		//Should finish last
 		thread1.setTarget(new Runnable(){
 			public void run(){
 				Lib.debug(AlarmTestChar, "Alarm.selfTest(): Thread 1 waiting.");
@@ -124,6 +133,8 @@ public class Alarm {
 				Lib.debug(AlarmTestChar, "Alarm.selfTest(): Thread 1 finished.");
 			}
 		});
+
+		//Should finish second.
 		thread2.setTarget(new Runnable(){
 			public void run(){
 				Lib.debug(AlarmTestChar, "Alarm.selfTest(): Thread 2 waiting.");
@@ -131,6 +142,8 @@ public class Alarm {
 				Lib.debug(AlarmTestChar, "Alarm.selfTest(): Thread 2 finished.");
 			}
 		});
+
+		//Should finish first.
 		thread3.setTarget(new Runnable(){
 			public void run(){
 				Lib.debug(AlarmTestChar, "Alarm.selfTest(): Thread 3 waiting.");
@@ -150,26 +163,31 @@ public class Alarm {
     }	
 	
 	
-	//Datafields
+	//Priority queue allows threads to be stored according to their timeToWait
 	private PriorityQueue<waitingThread> waitQueue = new PriorityQueue<waitingThread>();
 	private static final char AlarmTestChar = 'a';
 	
 	
 	
-	//Custom Classes
+	/* This class is a container for threads and their wakeTimes.
+	 * It also implements the Comparable allowing waitingThread objects
+	 * to be stored according to their wakeTimes in a priority queue.
+	 */
 	private class waitingThread implements Comparable<waitingThread>{
 
+		//Datafields
 		public KThread waitingThread;
 		public long wakeTime;
 		
-
+		//Constructor
 		public waitingThread(KThread thread, long time){
 
 			this.waitingThread = thread;
 			this.wakeTime = time;
 
 		}
-
+		
+		//Implementing the Comparable interface
 		public int compareTo(waitingThread other){
 
 			if(wakeTime > other.wakeTime)
