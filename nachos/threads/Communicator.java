@@ -11,6 +11,7 @@ import nachos.machine.*;
  */
 public class Communicator {
     //Datafield declarations
+    private static final char CommunicatorTestChar = 'C';
     Lock lock;
     Condition2 speaker;
     Condition2 listener;
@@ -470,7 +471,4 @@ public class Communicator {
 	
     	Lib.debug(CommunicatorTestChar, "Communicator.listenerSpeakerTest(): Finished listener then speaker test, passed.");
     }
-    
-    //Datafields
-    private static final char CommunicatorTestChar = 'C';
 }
