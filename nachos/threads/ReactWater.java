@@ -179,10 +179,7 @@ public class ReactWater{
     	o1.fork();
     	o2.fork();
     	h1.join();
-    	h2.join();
     	h3.join();
-    	o1.join();
-    	o2.join();
 		
     	Lib.debug(ReactWaterTestChar, "ReactWater.manyHydrogenTest(): Finished multiple hydrogen test, passed.");
 	}
@@ -262,11 +259,6 @@ public class ReactWater{
     	h3.fork();
     	h4.fork();
     	o1.join();
-    	o2.join();
-    	h1.join();
-    	h2.join();
-    	h3.join();
-    	h4.join();
 		
     	Lib.debug(ReactWaterTestChar, "ReactWater.manyOxygenTest(): Finished multiple oxygen test, passed.");
 	}
