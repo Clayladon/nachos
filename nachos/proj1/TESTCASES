@@ -196,3 +196,140 @@ Communicator Testing
 	manyListeners() starts off by stacking listeners instead of
 	speakers. Once multiple threads have called the listen() method,
 	speakers are generated till all the listeners are paired off.
+
+	The speakerListenerTest() instructs one thread to speak and one
+	thread to listen.
+
+	The listenerSpeakerTest() instructs one thread to listen and one
+	thread to speak.
+
+	Communicator.selfTest() output obtained via 'nachos -d C':
+
+	Communicator.selfTest(): Starting self test.
+	Communicator.manySpeakers(): Starting multiple speakers test.
+	Communicator.manySpeakers(): thread (thread1) created.
+	Communicator.manySpeakers(): thread (thread2) created.
+	Communicator.manySpeakers(): thread (thread3) created.
+	Communicator.manySpeakers(): thread (thread4) created.
+	Communicator.manySpeakers(): thread (thread5) created.
+	Communicator.manySpeakers(): thread (thread6) created.
+	Communicator.manySpeakers(): thread (thread7) created.
+	Communicator.manySpeakers(): thread (thread8) created.
+	Communicator.manySpeakers(): thread (thread9) created.
+	Communicator.manySpeakers(): thread (thread10) created.
+	Communicator.manySpeakers(): thread1 speaking word 1.
+	Communicator.manySpeakers(): thread2 speaking word 2.
+	Communicator.manySpeakers(): thread3 speaking word 3.
+	Communicator.manySpeakers(): thread4 speaking word 4.
+	Communicator.manySpeakers(): thread5 speaking word 5.
+	Communicator.manySpeakers(): thread6 listening to word 1.
+	Communicator.manySpeakers(): thread7 listening to word 2.
+	Communicator.manySpeakers(): thread8 listening to word 3.
+	Communicator.manySpeakers(): thread9 listening to word 4.
+	Communicator.manySpeakers(): thread10 listening to word 5.
+	Communicator.manySpeakers(): Finished multiple speaker test, passed.
+	Communicator.manyListeners(): Starting multiple listeners test.
+	Communicator.manyListeners(): thread (thread1) created.
+	Communicator.manyListeners(): thread (thread2) created.
+	Communicator.manyListeners(): thread (thread3) created.
+	Communicator.manyListeners(): thread (thread4) created.
+	Communicator.manyListeners(): thread (thread5) created.
+	Communicator.manyListeners(): thread (thread6) created.
+	Communicator.manyListeners(): thread (thread7) created.
+	Communicator.manyListeners(): thread (thread8) created.
+	Communicator.manyListeners(): thread (thread9) created.
+	Communicator.manyListeners(): thread1 about to listen.
+	Communicator.manyListeners(): thread2 about to listen.
+	Communicator.manyListeners(): thread3 about to listen.
+	Communicator.manyListeners(): thread4 about to listen.
+	Communicator.manyListeners(): thread5 speaking word 5.
+	Communicator.manyListeners(): thread6 speaking word 6.
+	Communicator.manyListeners(): thread7 speaking word 7.
+	Communicator.manyListeners(): thread8 speaking word 8.
+	Communicator.manyListeners(): thread1 listened to word 5.
+	Communicator.manyListeners(): thread2 listened to word 6.
+	Communicator.manyListeners(): thread3 listened to word 7.
+	Communicator.manyListeners(): thread4 listened to word 8.
+	Communicator.manyListeners(): Finished multiple listener test, passed.
+	Communicator.speakerListenerTest(): Starting speaker then listener test.
+	Communicator.speakerListenerTest(): thread (thread1) created.
+	Communicator.speakerListenerTest(): thread (thread2) created.
+	Communicator.speakerListenerTest(): thread1 speaking word 321.
+	Communicator.speakerListenerTest(): thread2 listening to word 321.
+	Communicator.speakerListenerTest(): Finished speaker then listener test, passed.
+	Communicator.listenerSpeakerTest(): Starting listener then speaker test.
+	Communicator.listenerSpeakerTest(): thread (thread1) created.
+	Communicator.listenerSpeakerTest(): thread (thread2) created.
+	Communicator.listenerSpeakerTest(): thread1 about to listen.
+	Communicator.listenerSpeakerTest(): thread2 speaking word 123.
+	Communicator.listenerSpeakerTest(): thread1 listened to word 123.
+	Communicator.listenerSpeakerTest(): Finished listener then speaker test, passed.
+	Communicator.selfTest(): Finished selfTest(), passed.
+	Machine halting!
+	
+	Ticks: total 30005770, kernel 30005770, user 0
+	Disk I/O: reads 0, writes 0
+	Console I/O: reads 0, writes 0
+	Paging: page faults 0, TLB misses 0
+	Network I/O: received 0, sent 0
+
+
+
+ReactWater Testing
+
+	The ReactWater.selfTest() functions by calling two
+	separate methods. These two methods encompass every
+	scenario that the ReactWater class might encounter.
+	These 2 testing methods are as follows:
+
+	- manyHydrogenTest()
+	- manyOxygenTest()
+
+	The manyHydrogenTest() method creates multiple threads,
+	and instructs them to call a ReactWater's hReady()
+	method. Once a few hydrogen threads are stacked, other
+	threads are created and instructed to call the same
+	ReactWater's oReady() method. Testing the class' handling
+	of a surplus of hydrogen threads. As well as the base case
+	of 2 Hydrogen + 1 Oxygen.
+
+	The manyOxygenTest() method creates multiple threads,
+	and instructs the first few to call a ReactWater's
+	oReady() method. Once a few oxygen threads are stacked,
+	the other threads are instructed to call the same ReactWater's
+	hReady() method. Testing the class' handling of a surplus
+	of Oxygen. As well as the base case of 1 Oxygen + 2 Hydrogen.
+
+	ReactWater.selfTest() output obtained via 'nachos -d r':
+
+	ReactWater.selfTest(): Starting self test.
+	ReactWater.manyHydrogenTest(): Starting multiple hydrogen test.
+	ReactWater.manyHydrogenTest(): hydrogen ready.
+	ReactWater.manyHydrogenTest(): hydrogen ready.
+	ReactWater.manyHydrogenTest(): hydrogen ready.
+	ReactWater.manyHydrogenTest(): hydrogen ready.
+	ReactWater.manyHydrogenTest(): oxygen ready.
+	ReactWater.manyHydrogenTest(): oxygen ready.
+	Water was made!
+	Water was made!
+	ReactWater.manyHydrogenTest(): Finished multiple hydrogen test, passed.
+	ReactWater.manyOxygenTest(): Starting multiple oxygen test.
+	ReactWater.manyOxygenTest(): oxygen ready.
+	ReactWater.manyOxygenTest(): oxygen ready.
+	ReactWater.manyOxygenTest(): hydrogen ready.
+	ReactWater.manyOxygenTest(): hydrogen ready.
+	Water was made!
+	ReactWater.manyOxygenTest(): hydrogen ready.
+	ReactWater.manyOxygenTest(): hydrogen ready.
+	Water was made!
+	ReactWater.manyOxygenTest(): Finished multiple oxygen test, passed.
+	ReactWater.selfTest(): Finished selfTest(), passed.
+	Machine halting!
+	
+	Ticks: total 30005770, kernel 30005770, user 0
+	Disk I/O: reads 0, writes 0
+	Console I/O: reads 0, writes 0
+	Paging: page faults 0, TLB misses 0
+	Network I/O: received 0, sent 0
+
+
