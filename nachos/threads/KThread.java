@@ -446,11 +446,13 @@ public class KThread {
     public static void selfTest() {
 		Lib.debug(KThreadTestChar, "KThread.selfTest(): Starting self test.");
 	
+		//Default selfTest() lines for KThread
 		new KThread(new PingTest(1)).setName("forked thread").fork();
 		new PingTest(0).run();
 		
-		
 		Lib.debug(KThreadTestChar, "KThread.selfTest(): Finished default tests, beginning custom tests.");
+		
+		//Custom selfTest() methods we wrote
 		selfJoinTest();
 		joinFinishedTest();
 		cyclicalJoinTest();
@@ -461,18 +463,19 @@ public class KThread {
     
     /**
      * Tests whether threads are able to join themselves.
-     * The result should always print "Self join test passed."
+     * Threads should not be able to join themselves, and any
+     * self join should be blocked since the thread would never wake.
      */
     private static void selfJoinTest(){
-	Lib.debug(KThreadTestChar, "KThread.selfJoinTest(): Starting self join test.");
+		Lib.debug(KThreadTestChar, "KThread.selfJoinTest(): Starting self join test.");
     
     	//Create a thread
     	KThread thread = new KThread();
-	thread.setName("Self");
-    	//Set the thread's target to run a join on itself
+		thread.setName("Self");
     	Lib.debug(KThreadTestChar, "KThread.selfJoinTest(): Thread created.");
 
-	thread.setTarget(new Runnable() {
+    	//Set the thread's target to run a join on itself
+		thread.setTarget(new Runnable() {
 		public void run(){
 			String result = "Self join test failed.";
 			
@@ -495,7 +498,8 @@ public class KThread {
     
 	/**
 	 * Tests whether threads are able to joined threads that have already finished.
-	 * The result should always print "Should not join to a finished thread."
+	 * Threads should never be able to join finished threads as they would be waiting
+	 * for a thread to finish that has already finished.
 	 */
 	private static void joinFinishedTest(){
 	
@@ -537,8 +541,8 @@ public class KThread {
 		
     /**
      * Tests whether threads can join a thread that is joined to them through a cyclical dependency.
-     * The result should always be that the last thread is unable to join and prints the message: 
-     * "Should not join a thread that has joined another thread to prevent potential cyclical joining."
+     * Threads should never be allowed to join themselves via a cyclical dependency since they would
+     * never wake up. Should be blocked in join().
      */
     private static void cyclicalJoinTest(){
     
