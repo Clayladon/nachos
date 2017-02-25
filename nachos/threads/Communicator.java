@@ -10,6 +10,7 @@ import nachos.machine.*;
  * threads can be paired off at this point.
  */
 public class Communicator {
+    //Datafield declarations
     Lock lock;
     Condition2 speaker;
     Condition2 listener;
@@ -21,6 +22,7 @@ public class Communicator {
      * Allocate a new communicator.
      */
     public Communicator() {
+    	//Initialize datafields
     	lock = new Lock();
     	speaker = new Condition2(lock);
     	listener = new Condition2(lock);
@@ -40,16 +42,23 @@ public class Communicator {
      * @param	word	the integer to transfer.
      */
     public void speak(int word) {
+    	//Acquire the lock
     	lock.acquire();
     	
+    	//While there are no listeners or the shared message is busy
     	while(numListenersWaiting == 0 || (!sharedMessageFree))
+    		//Put this thread on the speaker's waitQueue
     		speaker.sleep();
     		
+    	//Once there is a listener and the shared message is free claim the
+    	//shared message flag and set the sharedMessage to word
     	sharedMessageFree = false;
     	sharedMessage = word;
     	
+    	//Wake a listener
     	listener.wake();
     	
+    	//Release the lock
     	lock.release();
     }
 
@@ -60,25 +69,38 @@ public class Communicator {
      * @return	the integer transferred.
      */    
     public int listen() {
+    	//Acquire the lock and increment the number of listeners waiting
     	lock.acquire();
     	numListenersWaiting++;
     
+    	//Wake a speaker
     	speaker.wake();
+    	//Sleep until a speaker wakes the listener again
     	listener.sleep();
     
+    	//Store the word that is in sharedMessage
     	int word = sharedMessage;
+    	//Release the shared message flag to other speakers
     	sharedMessageFree = true;
     
+    	//Decrement the number of listeners waiting
     	numListenersWaiting--;
+    	//Wake a speaker to prompt a check for more listeners
     	speaker.wake();
+    	//Release the lock
     	lock.release();
     
+    	//Finally, return word
 		return word;
     }
     
+    /**
+     * Tests whether this module is working.
+     */
     public static void selfTest(){
     	Lib.debug(CommunicatorTestChar, "Communicator.selfTest(): Starting self test.");
     	
+    	//Each test is broken into it's own method that is called in turn
     	manySpeakers();
     	manyListeners();
     	speakerListenerTest();
@@ -86,11 +108,20 @@ public class Communicator {
     	
     	Lib.debug(CommunicatorTestChar, "Communicator.selfTest(): Finished selfTest(), passed.");
     }
+    
+    /**
+     * Tests whether the Communicator can handle a surplus of 
+     * speakers before recieving any listeners. This should be 
+     * the case as speakers are simply put to sleep until a listener
+     * is ready to listen.
+     */
     public static void manySpeakers(){
     	
     	Lib.debug(CommunicatorTestChar, "Communicator.manySpeakers(): Starting multiple speakers test.");
+    	//Create a Communicator object
     	Communicator manySpeakersComm = new Communicator();
     	
+    	//Create 5 speakers that each will speak a word (1-5) when they are forked
     	KThread thread1 = new KThread();
     	Lib.debug(CommunicatorTestChar, "Communicator.manySpeakers(): thread (thread1) created.");
     	thread1.setName("thread 1");
@@ -141,6 +172,7 @@ public class Communicator {
     		}
     	});
     	
+    	//Create 5 listeners that will listen to a word when forked
     	KThread thread6 = new KThread();
     	Lib.debug(CommunicatorTestChar, "Communicator.manySpeakers(): thread (thread6) created.");
     	thread6.setName("thread 6");
@@ -190,36 +222,46 @@ public class Communicator {
     												+ manySpeakersComm.listen() + ".");
     		}
     	});
-
-	thread1.fork();
-	thread2.fork();
-	thread3.fork();
-	thread4.fork();
-	thread5.fork();
-	thread6.fork();
-	thread7.fork();
-	thread8.fork();
-	thread9.fork();
-	thread10.fork();
-	thread1.join();
-	thread2.join();
-	thread3.join();
-	thread4.join();
-	thread5.join();
-	thread6.join();
-	thread7.join();
-	thread8.join();
-	thread9.join();
-	thread10.join();
+		//fork all 10 threads
+		thread1.fork();
+		thread2.fork();
+		thread3.fork();
+		thread4.fork();
+		thread5.fork();
+		thread6.fork();
+		thread7.fork();
+		thread8.fork();
+		thread9.fork();
+		thread10.fork();
+		//Join all 10 threads
+		thread1.join();
+		thread2.join();
+		thread3.join();
+		thread4.join();
+		thread5.join();
+		thread6.join();
+		thread7.join();
+		thread8.join();
+		thread9.join();
+		thread10.join();
 
     	Lib.debug(CommunicatorTestChar, "Communicator.manySpeakers(): Finished multiple speaker test, passed.");
     	
     }
+    
+    /**
+     * Tests whether the Communicator can handle a surplus of 
+     * listeners before recieving any speakers. This should be 
+     * the case as listeners are simply put to sleep until a speaker
+     * is ready to pass along a word.
+     */
     public static void manyListeners(){
     	
     	Lib.debug(CommunicatorTestChar, "Communicator.manyListeners(): Starting multiple listeners test.");
+    	//Create a Communicator object
     	Communicator manyListenersComm = new Communicator();
     	
+    	//Create 5 listeners that will listen to a word when a word becomes available after they are forked
     	KThread thread1 = new KThread();
     	Lib.debug(CommunicatorTestChar, "Communicator.manyListeners(): thread (thread1) created.");
     	thread1.setName("thread 1");
@@ -275,6 +317,7 @@ public class Communicator {
     		}
     	});
     	
+    	//Create 5 speakers that will speak a word (6-10) when they are forked
     	KThread thread6 = new KThread();
     	Lib.debug(CommunicatorTestChar, "Communicator.manyListeners(): thread (thread6) created.");
     	thread6.setName("thread 6");
@@ -324,37 +367,45 @@ public class Communicator {
     			manyListenersComm.speak(10);
     		}
     	});
-
-	thread1.fork();
-	thread2.fork();
-	thread3.fork();
-	thread4.fork();
-	thread5.fork();
-	thread6.fork();
-	thread7.fork();
-	thread8.fork();
-	thread9.fork();
-    	thread10.fork();
-	thread1.join();
-	thread2.join();
-	thread3.join();
-	thread4.join();
-	thread5.join();
-	thread6.join();
-	thread7.join();
-	thread8.join();
-	thread9.join();
-	thread10.join();
+    	
+		//Fork all 10 threads
+		thread1.fork();
+		thread2.fork();
+		thread3.fork();
+		thread4.fork();
+		thread5.fork();
+		thread6.fork();
+		thread7.fork();
+		thread8.fork();
+		thread9.fork();
+		thread10.fork();
+	
+		//Join all 10 threads
+		thread1.join();
+		thread2.join();
+		thread3.join();
+		thread4.join();
+		thread5.join();
+		thread6.join();
+		thread7.join();
+		thread8.join();
+		thread9.join();
+		thread10.join();
     	
     	Lib.debug(CommunicatorTestChar, "Communicator.manyListeners(): Finished multiple listener test, passed.");
     
     }
     
+    /**
+     * Tests whether a speaker will wait for a listener to complete the communicaion transaction
+     */
     public static void speakerListenerTest(){
     
     	Lib.debug(CommunicatorTestChar, "Communicator.speakerListenerTest(): Starting speaker then listener test.");
+    	//Create a Communicator
     	Communicator tester = new Communicator();
     	
+    	//Create a speaker that will speak 321 when forked
     	KThread thread1 = new KThread();
     	Lib.debug(CommunicatorTestChar, "Communicator.speakerListenerTest(): thread (thread1) created.");
     	thread1.setName("thread 1");
@@ -365,6 +416,7 @@ public class Communicator {
     		}
     	});
     	
+    	//Create a listener that will listen to a word when forked
     	KThread thread2 = new KThread();
     	Lib.debug(CommunicatorTestChar, "Communicator.speakerListenerTest(): thread (thread2) created.");
     	thread2.setName("thread 2");
@@ -376,18 +428,24 @@ public class Communicator {
     		}
     	});
     	
-	thread1.fork();
-	thread2.fork();
-	thread1.join();
+    	//Fork both threads and join thread1
+		thread1.fork();
+		thread2.fork();
+		thread1.join();
 	
     	Lib.debug(CommunicatorTestChar, "Communicator.speakerListenerTest(): Finished speaker then listener test, passed.");
     }
     
+    /**
+     * Tests whether a listener will wait for a speaker to complete the communicaion transaction
+     */
     public static void listenerSpeakerTest(){
     
     	Lib.debug(CommunicatorTestChar, "Communicator.listenerSpeakerTest(): Starting listener then speaker test.");
+    	//Create a Communicator
     	Communicator tester = new Communicator();
     	
+    	//Create a listener that will listen for a word once one is available after it has been forked
     	KThread thread1 = new KThread();
     	Lib.debug(CommunicatorTestChar, "Communicator.listenerSpeakerTest(): thread (thread1) created.");
     	thread1.setName("thread 1");
@@ -399,7 +457,7 @@ public class Communicator {
     		}
     	});
     	
-    	
+    	//Create a speaker that will speak 123 when forked
     	KThread thread2 = new KThread();
     	Lib.debug(CommunicatorTestChar, "Communicator.listenerSpeakerTest(): thread (thread2) created.");
     	thread2.setName("thread 2");
@@ -410,12 +468,14 @@ public class Communicator {
     		}
     	});
     
-	thread1.fork();
-	thread2.fork();
-	thread1.join();
+    	//Fork both threads and join thread1
+		thread1.fork();
+		thread2.fork();
+		thread1.join();
 	
     	Lib.debug(CommunicatorTestChar, "Communicator.listenerSpeakerTest(): Finished listener then speaker test, passed.");
     }
     
+    //Datafields
     private static final char CommunicatorTestChar = 'C';
 }
