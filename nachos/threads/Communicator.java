@@ -263,7 +263,7 @@ public class Communicator {
     	
     	//Create 5 listeners that will listen to a word when a word becomes available after they are forked
     	KThread thread1 = new KThread();
-    	Lib.debug(CommunicatorTestChar, "Communicator.manyListeners(): thread (thread1) created.");
+   // 	Lib.debug(CommunicatorTestChar, "Communicator.manyListeners(): thread (thread1) created.");
     	thread1.setName("thread 1");
     	thread1.setTarget(new Runnable() {
     		public void run(){
@@ -274,9 +274,20 @@ public class Communicator {
     	});
     	
     	KThread thread2 = new KThread();
-    	Lib.debug(CommunicatorTestChar, "Communicator.manyListeners(): thread (thread2) created.");
-    	thread2.setName("thread 2");
+    	Lib.debug(CommunicatorTestChar, "Communicator.manyListeners(): thread (thread1) created.");
+    	thread2.setName("thread 1");
     	thread2.setTarget(new Runnable() {
+    		public void run(){
+    			Lib.debug(CommunicatorTestChar, "Communicator.manyListeners(): thread1 about to listen.");
+    			Lib.debug(CommunicatorTestChar, "Communicator.manyListeners(): thread1 listened to word " 
+    												+ manyListenersComm.listen() + ".");
+    		}
+    	});
+    	
+    	KThread thread3 = new KThread();
+    	thread3.setName("thread 2");
+    	Lib.debug(CommunicatorTestChar, "Communicator.manyListeners(): thread (thread2) created.");
+    	thread3.setTarget(new Runnable() {
     		public void run(){
     			Lib.debug(CommunicatorTestChar, "Communicator.manyListeners(): thread2 about to listen.");
     			Lib.debug(CommunicatorTestChar, "Communicator.manyListeners(): thread2 listened to word " 
@@ -284,10 +295,10 @@ public class Communicator {
     		}
     	});
     	
-    	KThread thread3 = new KThread();
-    	thread3.setName("thread 3");
+    	KThread thread4 = new KThread();
     	Lib.debug(CommunicatorTestChar, "Communicator.manyListeners(): thread (thread3) created.");
-    	thread3.setTarget(new Runnable() {
+    	thread4.setName("thread 3");
+    	thread4.setTarget(new Runnable() {
     		public void run(){
     			Lib.debug(CommunicatorTestChar, "Communicator.manyListeners(): thread3 about to listen.");
     			Lib.debug(CommunicatorTestChar, "Communicator.manyListeners(): thread3 listened to word " 
@@ -295,10 +306,10 @@ public class Communicator {
     		}
     	});
     	
-    	KThread thread4 = new KThread();
+    	KThread thread5 = new KThread();
     	Lib.debug(CommunicatorTestChar, "Communicator.manyListeners(): thread (thread4) created.");
-    	thread4.setName("thread 4");
-    	thread4.setTarget(new Runnable() {
+    	thread5.setName("thread 4");
+    	thread5.setTarget(new Runnable() {
     		public void run(){
     			Lib.debug(CommunicatorTestChar, "Communicator.manyListeners(): thread4 about to listen.");
     			Lib.debug(CommunicatorTestChar, "Communicator.manyListeners(): thread4 listened to word " 
@@ -306,70 +317,58 @@ public class Communicator {
     		}
     	});
     	
-    	KThread thread5 = new KThread();
+    	//Create 5 speakers that will speak a word (6-10) when they are forked
+    	KThread thread6 = new KThread();
     	Lib.debug(CommunicatorTestChar, "Communicator.manyListeners(): thread (thread5) created.");
-    	thread5.setName("thread 5");
-    	thread5.setTarget(new Runnable() {
+    	thread6.setName("thread 5");
+    	thread6.setTarget(new Runnable() {
     		public void run(){
-    			Lib.debug(CommunicatorTestChar, "Communicator.manyListeners(): thread5 about to listen.");
-    			Lib.debug(CommunicatorTestChar, "Communicator.manyListeners(): thread5 listened to word " 
-    												+ manyListenersComm.listen() + ".");
+    			Lib.debug(CommunicatorTestChar, "Communicator.manyListeners(): thread5 speaking word 5.");
+    			manyListenersComm.speak(5);
     		}
     	});
     	
-    	//Create 5 speakers that will speak a word (6-10) when they are forked
-    	KThread thread6 = new KThread();
+    	KThread thread7 = new KThread();
     	Lib.debug(CommunicatorTestChar, "Communicator.manyListeners(): thread (thread6) created.");
-    	thread6.setName("thread 6");
-    	thread6.setTarget(new Runnable() {
+    	thread7.setName("thread 6");
+    	thread7.setTarget(new Runnable() {
     		public void run(){
     			Lib.debug(CommunicatorTestChar, "Communicator.manyListeners(): thread6 speaking word 6.");
     			manyListenersComm.speak(6);
     		}
     	});
     	
-    	KThread thread7 = new KThread();
+    	KThread thread8 = new KThread();
     	Lib.debug(CommunicatorTestChar, "Communicator.manyListeners(): thread (thread7) created.");
-    	thread7.setName("thread 7");
-    	thread7.setTarget(new Runnable() {
+    	thread8.setName("thread 7");
+    	thread8.setTarget(new Runnable() {
     		public void run(){
     			Lib.debug(CommunicatorTestChar, "Communicator.manyListeners(): thread7 speaking word 7.");
     			manyListenersComm.speak(7);
     		}
     	});
     	
-    	KThread thread8 = new KThread();
+    	KThread thread9 = new KThread();
     	Lib.debug(CommunicatorTestChar, "Communicator.manyListeners(): thread (thread8) created.");
-    	thread8.setName("thread 8");
-    	thread8.setTarget(new Runnable() {
+    	thread9.setName("thread 8");
+    	thread9.setTarget(new Runnable() {
     		public void run(){
     			Lib.debug(CommunicatorTestChar, "Communicator.manyListeners(): thread8 speaking word 8.");
     			manyListenersComm.speak(8);
     		}
     	});
     	
-    	KThread thread9 = new KThread();
+    	KThread thread10 = new KThread();
     	Lib.debug(CommunicatorTestChar, "Communicator.manyListeners(): thread (thread9) created.");
-    	thread9.setName("thread 9");
-    	thread9.setTarget(new Runnable() {
+    	thread10.setName("thread 9");
+    	thread10.setTarget(new Runnable() {
     		public void run(){
-    			Lib.debug(CommunicatorTestChar, "Communicator.manyListeners(): thread9 speaking word 9.");
+    		//	Lib.debug(CommunicatorTestChar, "Communicator.manyListeners(): thread9 speaking word 9.");
     			manyListenersComm.speak(9);
     		}
     	});
     	
-    	KThread thread10 = new KThread();
-    	Lib.debug(CommunicatorTestChar, "Communicator.manyListeners(): thread (thread10) created.");
-    	thread10.setName("thread 10");
-    	thread10.setTarget(new Runnable() {
-    		public void run(){
-    			Lib.debug(CommunicatorTestChar, "Communicator.manyListeners(): thread10 speaking word 10.");
-    			manyListenersComm.speak(10);
-    		}
-    	});
-    	
 		//Fork all 10 threads
-		thread1.fork();
 		thread2.fork();
 		thread3.fork();
 		thread4.fork();
@@ -378,11 +377,9 @@ public class Communicator {
 		thread7.fork();
 		thread8.fork();
 		thread9.fork();
-		thread10.fork();
 	
 		//Join all 10 threads
-		thread1.join();
-		thread2.join();
+    		thread2.join();
 		thread3.join();
 		thread4.join();
 		thread5.join();
@@ -390,8 +387,6 @@ public class Communicator {
 		thread7.join();
 		thread8.join();
 		thread9.join();
-		thread10.join();
-    	
     	Lib.debug(CommunicatorTestChar, "Communicator.manyListeners(): Finished multiple listener test, passed.");
     
     }
