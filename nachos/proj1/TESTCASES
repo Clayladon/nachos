@@ -1,0 +1,198 @@
+KThread Testing
+
+	KThread.selfTest() functions by calling 4 separate 
+	methods each testing a specific case or scenario. 
+	These 4 testing methods are as follows:
+
+	- PingTest(0)		//The default, built-in test.
+	- selfJoinTest()
+	- joinFinishedTest()
+	- cyclicalJoinTest()
+	
+	The selfJoinTest() tests whether threads are able to
+	join themselves directly. A thread is created and is
+	instructed to join itself.
+
+	The joinFinishedTest() tests whether threads are able
+	to join finished threads. Two threads are created, one
+	is instructed to finish immediately and the other is
+	instructed to join, the now finished, thread.
+
+	The cyclicalJoinTest() tests whether threads are able 
+	to cyclically join themselves. Three threads are created
+	(thread1, thread2 & thread3), thread1 is instructed to
+	join thread2 which joins thread3 which is instructed to
+	join thread1 resulting in a cyclical dependency if the
+	join is successful.
+
+	KThread.selfTest() output obtained via 'nachos -d k':
+				
+	nachos 5.0j initializing... config interrupt timer user-check grader
+	KThread.selfTest(): Starting self test.
+	*** thread 0 looped 0 times
+	*** thread 1 looped 0 times
+	*** thread 0 looped 1 times
+	*** thread 1 looped 1 times
+	*** thread 0 looped 2 times
+	*** thread 1 looped 2 times
+	*** thread 0 looped 3 times
+	*** thread 1 looped 3 times
+	*** thread 0 looped 4 times
+	KThread.selfTest(): Finished default tests, beginning custom tests.
+	KThread.selfJoinTest(): Starting self join test.
+	KThread.selfJoinTest(): Thread created.
+	*** thread 1 looped 4 times
+	KThread.selfJoinTest(): Thread about to join itself.
+	Blocked, attempting to join self. Thread: Self (#9)
+	KThread.selfJoinTest(): Self join test, passed.
+	KThread.joinFinishedTest(): Starting test to join finished thread.
+	KThread.joinFinishedTest(): Two threads created, deadThread and joiner.
+	KThread.joinFinishedTest(): deadThread finished running.
+	KThread.joinFinishedTest(): joiner about to join deadThread.
+	Blocked, attempting to join a finished thread. Thread: Finished Thread (#10)
+	KThread.joinFinishedTest(): Finished thread join test, passed.
+	KThread.cyclicalJoinTest(): Starting test to identify cyclical dependency.
+	KThread.cyclicalJoinTest(): Three threads created.
+	KThread.cyclicalJoinTest(): thread1 about to join thread2.
+	KThread.cyclicalJoinTest(): thread2 about to join thread3.
+	KThread.cyclicalJoinTest(): thread3 about to join thread1.
+	Blocked, cyclical joining. Thread: cyclical test thread 1 (#12)
+	KThread.cyclicalJoinTest(): Cyclical join test, passed.
+	KThread.selfTest(): Finished self test, passed.
+	Machine halting!
+	
+	Ticks: total 30003700, kernel 30003700, user 0
+	Disk I/O: reads 0, writes 0
+	Console I/O: reads 0, writes 0
+	Paging: page faults 0, TLB misses 0
+	Network I/O: received 0, sent 0
+
+
+
+Condition2 Testing
+
+	Condition2.selfTest() is split into 2 sections. The first
+	section tests the functionality of the sleep() and wake()
+	methods. It checks the contents of the waitQueue after the
+	sleep() method is called, and subsequently the wake() method
+	to ensure that these methods make proper use of the waitQueue.
+	It also makes an excessive call to the wake() method to
+	ensure that the method can handle an empty waitQueue. This is
+	accomplished by creating a sleeper thread and a wake thread,
+	instructing one to sleep and instructing the other to wake the
+	sleeper.
+	
+	The second section tests whether Condition2 can handle multiple
+	sleeping threads at once as well as the functionality of the 
+	wakeAll() method. Multiple threads are created, and instructed
+	to call a Condition2's sleep() method. A wakeMulti thread is then
+	created and instructed to call the same Condition2's wakeAll() 
+	method. This test ensures that the threads are awoken in the
+	proper order.
+
+	Condition2.selfTest() output obtained via 'nachos -d c':
+
+	Condition2.selfTest(): Starting self test.
+	Condition2.selfTest(): Lock (lock), Condition2 (tester) created.
+	Condition2.selfTest(): Two threads created, sleeper and waker.
+	Condition2.selfTest(): Sleeper starting.
+	Condition2.selfTest(): Sleeper acquired lock.
+	Condition2.selfTest(): Sleeper about to sleep.
+	Condition2.selfTest(): Waker starting.
+	Condition2.selfTest(): Waker acquired lock.
+	Condition2.selfTest(): Tester's waitQueue is not empty.
+	Condition2.selfTest(): Sleeper woke up, releasing lock.
+	Condition2.selfTest(): Tester's waitQueue is empty.
+	Condition2.selfTest(): Starting multiple wake test.
+	Condition2.selfTest(): Three threads (sleep1, sleep2, sleep3) and thread (wakeMulti) created.
+	Condition2.selfTest(): Sleep1 sleeping.
+	Condition2.selfTest(): Sleep2 sleeping.
+	Condition2.selfTest(): Sleep3 sleeping.
+	Condition2.selfTest(): WakeMulti started.
+	Condition2.selfTest(): Sleep1 woke up.
+	Condition2.selfTest(): Sleep2 woke up.
+	Condition2.selfTest(): Sleep3 woke up.
+	Condition2.selfTest(): WakeMulti finished.
+	Condiiton2.selfTest(): Finished selfTest(), passed.
+	Machine halting!
+	
+	Ticks: total 30005250, kernel 30005250, user 0
+	Disk I/O: reads 0, writes 0
+	Console I/O: reads 0, writes 0
+	Paging: page faults 0, TLB misses 0
+	Network I/O: received 0, sent 0
+
+
+
+Alarm Testing
+
+	Alarm.selfTest() is separated into 2 sections. The first
+	simply tests if an Alarm can handle multiple sleeping 
+	threads, and if thos sleeping threads are awoken in the
+	proper order. Three threads are created and all three are
+	instructed to wait for the sleep amount of time. All three
+	threads should be woken up by the same call to the
+	timerInterrupt() method, and should wake up in the proper
+	order.
+
+	The second section tests the functionality of the priority
+	Queue and by extension the full functionality of the class.
+	Multiple threads are put to sleep for varying amounts of 
+	time. The order in which these threads wake up should be
+	determined by their timeToWait and not the order in which
+	they were put to sleep.
+
+	Alarm.selfTest() output obtained via 'nachos -d a':
+
+	Alarm.selfTest(): Starting self test.
+	Alarm.selfTest(): Alarm (clock) and three threads (A,B,C) created.
+	Alarm.selfTest(): Forking threads A, B, and C.
+	Alarm.selfTest(): Thread A waiting.
+	Alarm.selfTest(): Thread B waiting.
+	Alarm.selfTest(): Thread C waiting.
+	Alarm.selfTest(): Thread A finished.
+	Alarm.selfTest(): Thread B finished.
+	Alarm.selfTest(): Thread C finished.
+	Alarm.selfTest(): Alarm test with same wait times finished.
+	Alarm.selfTest(): Three threads (1,2,3) created.
+	Alarm.selfTest(): Forking threads 1, 2, and 3.
+	Alarm.selfTest(): Thread 1 waiting.
+	Alarm.selfTest(): Thread 2 waiting.
+	Alarm.selfTest(): Thread 3 waiting.
+	Alarm.selfTest(): Thread 3 finished.
+	Alarm.selfTest(): Thread 2 finished.
+	Alarm.selfTest(): Thread 1 finished.
+	Alarm.selfTest(): Alarm test with different wait times finished.
+	Alarm.selfTest(): Finished selfTest(), passed.
+	Machine halting!
+	
+	Ticks: total 30005250, kernel 30005250, user 0
+	Disk I/O: reads 0, writes 0
+	Console I/O: reads 0, writes 0
+	Paging: page faults 0, TLB misses 0
+	Network I/O: received 0, sent 0
+
+
+
+Communicator Testing
+
+	Communicator.selfTest() functions by calling 4 separate
+	methods, each testing a different scenario. The 4 testing
+	methods are as follows:
+
+	- manySpeakers()
+	- manyListeners()
+	- speakerListenerTest()
+	- listenerSpeakerTest()
+
+	These 4 methods all function similarly but test 4 distinct
+	cases. First, manySpeakers() tests whether the Communicator
+	class can handle a surplus of speakers. Multiple threads are
+	instructed to call the speak() method. Once all the speakers
+	are stacked, muliple threads are instructed to call the listen()
+	method till all the speakers have been paired off with a
+	listener.
+
+	manyListeners() starts off by stacking listeners instead of
+	speakers. Once multiple threads have called the listen() method,
+	speakers are generated till all the listeners are paired off.
