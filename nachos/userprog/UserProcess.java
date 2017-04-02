@@ -23,10 +23,14 @@ public class UserProcess {
      * Allocate a new process.
      */
     public UserProcess() {
-	int numPhysPages = Machine.processor().getNumPhysPages();
-	pageTable = new TranslationEntry[numPhysPages];
-	for (int i=0; i<numPhysPages; i++)
-	    pageTable[i] = new TranslationEntry(i,i, true,false,false,false);
+		int numPhysPages = Machine.processor().getNumPhysPages();
+		pageTable = new TranslationEntry[numPhysPages];
+		for (int i=0; i<numPhysPages; i++)
+		    pageTable[i] = new TranslationEntry(i,i, true,false,false,false);
+    	processID = numProcesses;
+    	numProcesses++;
+    	localFileArray = new OpenFile[16];
+    	globalFileRefArray = new FileReference[16];
     }
     
     /**
@@ -335,16 +339,65 @@ public class UserProcess {
 	processor.writeRegister(Processor.regA1, argv);
     }
 
+	
+	public void addressChecker(int addr){
+		int pageNum = Processor.pageFromAddress(addr);
+		//if(pageNum >= numPages || pageNum < 0)
+			//handleExit(-1); //TODO uncomment
+	}
+
     /**
      * Handle the halt() system call. 
      */
     private int handleHalt() {
-
-	Machine.halt();
+		if(processID == 0){
+			Machine.halt();
+			return 0;
+		}
 	
 	Lib.assertNotReached("Machine.halt() did not halt machine!");
-	return 0;
+	return 1;
     }
+    private int handleCreate(int fileNamePtr){
+    	return openFile(fileNamePtr, true);
+    }
+    private int handleOpen(int fileNamePtr){
+    	return openFile(fileNamePtr, false);
+    }
+    private int openFile(int fileNamePtr, boolean isCreating){
+    	addressChecker(fileNamePtr);
+    	String fileName = readVirtualMemoryString(fileNamePtr, 256);
+    	int globalFileIndex = -1;
+    	int nullIndex = -1;
+    	
+    	for(int index = 0; index < globalFileRefArray.length; index++){
+    		if(globalFileRefArray[index] == null)
+    			nullIndex = index;
+    		if(globalFileRefArray[index].fileName == fileName)
+    			globalFileIndex = index;
+    	}
+    	
+    	if(globalFileIndex != -1 && !globalFileRefArray[globalFileIndex].markedForDeath)
+    		globalFileRefArray[globalFileIndex].numReferences++;
+       	else{
+    		if(nullIndex == -1)
+    			return -1;
+    		globalFileRefArray[nullIndex] = new FileReference(fileName);
+    	}
+    	
+    	int localFileIndex = -1;
+    	for(int index = 0; index < localFileArray.length; index++)
+    		if(localFileArray[index] == null)
+    			localFileIndex = index;
+    			
+    	if(localFileIndex == -1)
+    		return -1;
+    											//TODO Fix
+    	//localFileArray[localFileIndex] = UserKernel.FileSystem.open(fileName, isCreating);
+    	
+    	return localFileIndex;
+    }		
+    
 
 
     private static final int
@@ -388,10 +441,21 @@ public class UserProcess {
      * @return	the value to be returned to the user.
      */
     public int handleSyscall(int syscall, int a0, int a1, int a2, int a3) {
-	switch (syscall) {
-	case syscallHalt:
-	    return handleHalt();
-
+		switch (syscall) {
+			case syscallHalt:
+			    return handleHalt();
+			case syscallCreate:
+				return handleCreate(a0);
+			case syscallOpen:
+				return handleOpen(a0);
+			case syscallRead:
+				//return handleRead(); //TODO uncomment
+			case syscallWrite:
+				//return handleWrite();
+			case syscallClose:
+				//return handleClose();
+			case syscallUnlink:
+				//return handleUnlink();
 
 	default:
 	    Lib.debug(dbgProcess, "Unknown syscall " + syscall);
@@ -446,4 +510,10 @@ public class UserProcess {
 	
     private static final int pageSize = Processor.pageSize;
     private static final char dbgProcess = 'a';
+    
+    private static int numProcesses;
+    public int processID;
+    
+    OpenFile[] localFileArray;
+    static FileReference[] globalFileRefArray;
 }
