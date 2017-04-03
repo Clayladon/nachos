@@ -358,12 +358,15 @@ public class UserProcess {
 	Lib.assertNotReached("Machine.halt() did not halt machine!");
 	return 1;
     }
+    
     private int handleCreate(int fileNamePtr){
     	return openFile(fileNamePtr, true);
     }
+    
     private int handleOpen(int fileNamePtr){
     	return openFile(fileNamePtr, false);
     }
+    
     private int openFile(int fileNamePtr, boolean isCreating){
     	addressChecker(fileNamePtr);
     	String fileName = readVirtualMemoryString(fileNamePtr, 256);
@@ -392,12 +395,83 @@ public class UserProcess {
     			
     	if(localFileIndex == -1)
     		return -1;
-    											//TODO Fix
-    	//localFileArray[localFileIndex] = UserKernel.FileSystem.open(fileName, isCreating);
+    	
+    	localFileArray[localFileIndex] = UserKernel.fileSystem.open(fileName, isCreating);
     	
     	return localFileIndex;
     }		
     
+    public int handleRead(int fileIndex, int bufferPtr, int size){
+    	addressChecker(bufferPtr);
+    	if(fileIndex < 0 || fileIndex > 15 || localFileArray[fileIndex] == null)
+    		return -1;
+    	
+    	byte[] storage = new byte[size];
+    	
+    	int bytesRead = localFileArray[fileIndex].read(storage, 0, size);
+       	if(bytesRead == -1)
+    		return -1;
+    		
+    	int bytesWritten = writeVirtualMemory(bufferPtr, storage, 0, size);
+    	if(bytesWritten != bytesRead)
+    		return -1;
+    		
+    	return bytesRead;
+    }
+    
+    public int handleWrite(int fileIndex, int bufferPtr, int size){
+    	addressChecker(bufferPtr);
+    	if(fileIndex < 0 || fileIndex > 15 || localFileArray[fileIndex] == null)
+    		return -1;
+    		
+    	byte[] storage = new byte[size];
+    	
+    	int bytesRead = readVirtualMemory(bufferPtr, storage, 0, size);
+    	int bytesWritten = localFileArray[fileIndex].write(storage, 0, bytesRead);
+    	
+    	return bytesWritten;
+    }
+    
+    public int handleClose(int fileIndex){
+    	return closeFile(fileIndex, false);
+    }
+    
+    public int handleUnlink(int fileIndex){
+    	return closeFile(fileIndex, true);
+    }
+    
+    public int closeFile(int fileIndex, boolean isUnlinking){
+    	if(fileIndex < 0 || fileIndex > 15 || localFileArray[fileIndex] == null)
+    		return -1;
+    		
+    	String fileName = localFileArray[fileIndex].getName();
+    	
+    	localFileArray[fileIndex].close();
+    	localFileArray[fileIndex] = null;
+    	
+    	int globalFileIndex = -1;
+    	for(int index = 0; index < globalFileRefArray.length; index++)
+    		if(globalFileRefArray[index].fileName == fileName)
+    			globalFileIndex = index;
+    	
+    	if(globalFileIndex == -1)
+    		return -1;
+    	
+    	if(isUnlinking)
+    		globalFileRefArray[globalFileIndex].markedForDeath = true;
+    		
+    	globalFileRefArray[globalFileIndex].numReferences--;
+    	
+    	if(globalFileRefArray[globalFileIndex].numReferences == 0){
+    		if(globalFileRefArray[globalFileIndex].markedForDeath){
+    			if(!UserKernel.fileSystem.remove(fileName))
+    				return -1; 
+    			globalFileRefArray[globalFileIndex] = null;
+    		}
+    	}
+    	
+    	return 0;
+    }
 
 
     private static final int
@@ -449,13 +523,13 @@ public class UserProcess {
 			case syscallOpen:
 				return handleOpen(a0);
 			case syscallRead:
-				//return handleRead(); //TODO uncomment
+				return handleRead(a0, a1, a2); 
 			case syscallWrite:
-				//return handleWrite();
+				return handleWrite(a0, a1, a2);
 			case syscallClose:
-				//return handleClose();
+				return handleClose(a0);
 			case syscallUnlink:
-				//return handleUnlink();
+				return handleUnlink(a0);
 
 	default:
 	    Lib.debug(dbgProcess, "Unknown syscall " + syscall);
