@@ -5,6 +5,7 @@ import nachos.threads.*;
 import nachos.userprog.*;
 
 import java.io.EOFException;
+import java.util.HashMap;
 
 /**
  * Encapsulates the state of a user process that is not contained in its
@@ -27,10 +28,18 @@ public class UserProcess {
 		pageTable = new TranslationEntry[numPhysPages];
 		for (int i=0; i<numPhysPages; i++)
 		    pageTable[i] = new TranslationEntry(i,i, true,false,false,false);
+    	
+    	//Task 1
     	processID = numProcesses;
     	numProcesses++;
     	localFileArray = new OpenFile[16];
     	globalFileRefArray = new FileReference[16];
+    	
+    	//Task 3
+    	hasExited = false;
+    	joinLock = new Lock();
+    	waitingToJoin = new Condition(joinLock);
+    	children = new HashMap<Integer, ChildProcess>();
     }
     
     /**
@@ -472,6 +481,89 @@ public class UserProcess {
     	
     	return 0;
     }
+    
+    public int handleExec(int fileNamePtr, int argc, int argvPtr){
+    	int[] arguPtrs = new int[argc];
+    	
+    	String fileName = readVirtualMemoryString(fileNamePtr, 256);
+    	if(fileName == null || !fileName.endsWith(".coff"))
+    		return -1;
+    	
+    	for(int i=0; i<argc; i++){
+    		byte[] size = new byte[4];
+    		readVirtualMemory(argvPtr + i * 4, size, 0, 4);
+    		arguPtrs[i] = Lib.bytesToInt(size, 0);
+    	}
+    	
+    	String[] argus = new String[argc];
+    	
+    	for(int i=0; i<argc; i++){
+    		byte[] fileNames = new byte[256];
+    		readVirtualMemory(arguPtrs[i], fileNames, 0, 256);
+    		argus[i] = new String(fileNames);
+    	}
+    	
+    	UserProcess createChild = new UserProcess();
+    	createChild.parent = this;
+    	children.put(createChild.processID, new ChildProcess(createChild));
+    	
+    	createChild.execute(fileName, argus);
+    	
+    	return createChild.processID;
+    }
+    
+    public int handleJoin(int processID, int statusPtr){
+
+    	ChildProcess child = children.get(processID);
+    	if(child == null)
+    		return -1;
+    	
+    	if(child.process != null)
+    		child.process.joinProcess();
+    		
+    	children.remove(processID);
+    	
+    	writeVirtualMemory(statusPtr, Lib.bytesFromInt(child.returnValue));
+    	
+    	return 1;
+    }
+    
+    public void joinProcess(){
+    	joinLock.acquire();
+    	while(!hasExited)
+    		waitingToJoin.sleep();
+    	joinLock.release();
+    }
+    
+    public int handleExit(int status){
+    	joinLock.acquire();
+    	
+    	if(parent != null){
+    		parent.children.get(processID).returnValue = status;
+    		parent.children.get(processID).process = null;
+    	}
+    	
+    	for(int i=0; i<children.size(); ++i)
+    		if(children.get(i).process != null)
+    			children.get(i).process.parent = null;
+    			
+    	children = null;
+    	
+    	for(int i=2; i<localFileArray.length; ++i)
+    		handleClose(i);
+    		
+    	hasExited = true;
+    	waitingToJoin.wakeAll();
+    	
+    	unloadSections();
+    	
+    	joinLock.release();
+    	
+    	handleHalt();
+    	
+    	KThread.finish();
+    	return 0;
+    }
 
 
     private static final int
@@ -530,6 +622,12 @@ public class UserProcess {
 				return handleClose(a0);
 			case syscallUnlink:
 				return handleUnlink(a0);
+			case syscallExec:
+				return handleExec(a0, a1, a2);
+			case syscallJoin:
+				return handleJoin(a0, a1);
+			case syscallExit:
+				return handleExit(a0);
 
 	default:
 	    Lib.debug(dbgProcess, "Unknown syscall " + syscall);
@@ -585,9 +683,17 @@ public class UserProcess {
     private static final int pageSize = Processor.pageSize;
     private static final char dbgProcess = 'a';
     
+    //Task 1 variables
     private static int numProcesses;
     public int processID;
     
     OpenFile[] localFileArray;
     static FileReference[] globalFileRefArray;
+
+	//Task 3 variables
+	UserProcess parent;
+	boolean hasExited;
+	Lock joinLock;
+	Condition waitingToJoin;
+	HashMap<Integer, ChildProcess> children;
 }

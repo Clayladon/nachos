@@ -22,7 +22,7 @@ threads =	ThreadedKernel KThread Alarm ReactWater \
 		Condition2 Communicator Rider ElevatorController \
 		PriorityScheduler LotteryScheduler Boat
 
-userprog =	UserKernel UThread UserProcess SynchConsole FileReference
+userprog =	UserKernel UThread UserProcess SynchConsole FileReference ChildProcess
 
 vm =		VMKernel VMProcess
 
