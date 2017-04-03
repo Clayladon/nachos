@@ -35,6 +35,9 @@ public class UserProcess {
     	localFileArray = new OpenFile[16];
     	globalFileRefArray = new FileReference[16];
     	
+    	//Task 2
+    	memoryLock = new Lock();
+    	
     	//Task 3
     	hasExited = false;
     	joinLock = new Lock();
@@ -83,6 +86,31 @@ public class UserProcess {
      */
     public void restoreState() {
 	Machine.processor().setPageTable(pageTable);
+    }
+    
+    public int accessMemory(int vaddr, byte[] data, int offset, int length, boolean isRead){
+    	int vpn = vaddr / pageSize;
+    	int vOffset = vaddr % pageSize;
+    	
+    	TranslationEntry entry = pageTable[vpn];
+    	entry.used = true;
+    	int addr = entry.ppn * pageSize + vOffset;
+    	byte[] memory = Machine.processor().getMemory();
+    	
+    	if(addr < 0 || addr > memory.length || !entry.valid)
+    		return 0;
+    		
+    	int amount = Math.min(length, memory.length - addr);
+    	
+    	if(isRead)
+    		System.arraycopy(memory, addr, data, offset, amount);
+    	else
+    		if(entry.readOnly)
+    			System.arraycopy(data, offset, memory, addr, amount);
+    		else
+    			return 0;
+    	
+    	return amount;
     }
 
     /**
@@ -142,18 +170,11 @@ public class UserProcess {
      */
     public int readVirtualMemory(int vaddr, byte[] data, int offset,
 				 int length) {
-	Lib.assertTrue(offset >= 0 && length >= 0 && offset+length <= data.length);
+		memoryLock.acquire();
+		int amount = accessMemory(vaddr, data, offset, length, true);
+		memoryLock.release();
 
-	byte[] memory = Machine.processor().getMemory();
-	
-	// for now, just assume that virtual addresses equal physical addresses
-	if (vaddr < 0 || vaddr >= memory.length)
-	    return 0;
-
-	int amount = Math.min(length, memory.length-vaddr);
-	System.arraycopy(memory, vaddr, data, offset, amount);
-
-	return amount;
+		return amount;
     }
 
     /**
@@ -185,18 +206,11 @@ public class UserProcess {
      */
     public int writeVirtualMemory(int vaddr, byte[] data, int offset,
 				  int length) {
-	Lib.assertTrue(offset >= 0 && length >= 0 && offset+length <= data.length);
+		memoryLock.acquire();
+		int amount = accessMemory(vaddr, data, offset, length, false);
+		memoryLock.release();
 
-	byte[] memory = Machine.processor().getMemory();
-	
-	// for now, just assume that virtual addresses equal physical addresses
-	if (vaddr < 0 || vaddr >= memory.length)
-	    return 0;
-
-	int amount = Math.min(length, memory.length-vaddr);
-	System.arraycopy(data, offset, memory, vaddr, amount);
-
-	return amount;
+		return amount;
     }
 
     /**
@@ -294,7 +308,7 @@ public class UserProcess {
      *
      * @return	<tt>true</tt> if the sections were successfully loaded.
      */
-    protected boolean loadSections() {
+    protected boolean loadSections() { //TODO Modify for task 2
 	if (numPages > Machine.processor().getNumPhysPages()) {
 	    coff.close();
 	    Lib.debug(dbgProcess, "\tinsufficient physical memory");
@@ -323,6 +337,7 @@ public class UserProcess {
      * Release any resources allocated by <tt>loadSections()</tt>.
      */
     protected void unloadSections() {
+    	UserKernel.releasePageTable(pageTable); //TODO Fix
     }    
 
     /**
@@ -689,6 +704,9 @@ public class UserProcess {
     
     OpenFile[] localFileArray;
     static FileReference[] globalFileRefArray;
+    
+    //Task 2 variables
+    Lock memoryLock;
 
 	//Task 3 variables
 	UserProcess parent;

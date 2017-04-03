@@ -4,6 +4,8 @@ import nachos.machine.*;
 import nachos.threads.*;
 import nachos.userprog.*;
 
+import java.util.LinkedList;
+
 /**
  * A kernel that can support multiple user processes.
  */
@@ -12,7 +14,9 @@ public class UserKernel extends ThreadedKernel {
      * Allocate a new user kernel.
      */
     public UserKernel() {
-	super();
+		super();
+	
+		globalFreePageList = new LinkedList<TranslationEntry>();
     }
 
     /**
@@ -20,13 +24,20 @@ public class UserKernel extends ThreadedKernel {
      * processor's exception handler.
      */
     public void initialize(String[] args) {
-	super.initialize(args);
+		super.initialize(args);
 
-	console = new SynchConsole(Machine.console());
+		console = new SynchConsole(Machine.console());
 	
-	Machine.processor().setExceptionHandler(new Runnable() {
-		public void run() { exceptionHandler(); }
-	    });
+		Machine.processor().setExceptionHandler(new Runnable() {
+			public void run() { exceptionHandler(); }
+		    });
+	    
+		
+		int numPages = Machine.processor().getNumPhysPages();
+		for(int i=0; i<numPages; ++i)
+			globalFreePageList.add(new TranslationEntry(0, i, false, false, false, false));
+		
+		pageLock = new Lock();
     }
 
     /**
@@ -106,10 +117,46 @@ public class UserKernel extends ThreadedKernel {
     public void terminate() {
 	super.terminate();
     }
+    
+    public TranslationEntry[] getPages(int amount) throws InsufficientFreePagesException{
+    	pageLock.acquire();
+    	
+    	if(!globalFreePageList.isEmpty() && globalFreePageList.size() >= amount){
+    		TranslationEntry[] requestedPages = new TranslationEntry[amount];
+    		
+    		for(int i=0; i<requestedPages.length; ++i){
+    			requestedPages[i] = globalFreePageList.remove();
+    			requestedPages[i].valid = true;
+    		}
+    		
+    		pageLock.release();
+    		return requestedPages;
+    	}
+    	else{
+    		pageLock.release();
+    		throw new InsufficientFreePagesException();
+    	}
+    }
+    
+    public void releasePageTable(TranslationEntry[] pageTable){
+    	pageLock.acquire();
+    	
+    	for(int i=0; i<pageTable.length; ++i){
+    		pageTable[i].valid = false;
+    		globalFreePageList.add(pageTable[i]);
+    	}
+    	
+    	pageLock.release();
+    }
+    
+    public class InsufficientFreePagesException extends Exception{}
 
     /** Globally accessible reference to the synchronized console. */
     public static SynchConsole console;
 
     // dummy variables to make javac smarter
     private static Coff dummy1 = null;
+    
+    public LinkedList<TranslationEntry> globalFreePageList; //TODO should this be static?
+    public Lock pageLock;
 }
