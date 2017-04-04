@@ -16,5 +16,15 @@ int main(){
 	
 	printf("Opened\n");
 
+	char *buf[1024];
+
+	int bytesRead = read(location, buf, 1024);
+
+	int i = 0;
+	for(i = 0; i < bytesRead; ++i){
+
+		printf(buf[i]);
+	}
+
 	return 0;
 }
