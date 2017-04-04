@@ -118,6 +118,9 @@ public class UserKernel extends ThreadedKernel {
 	super.terminate();
     }
     
+    /**
+     * TODO comments
+     */
     public TranslationEntry[] getPages(int amount) throws InsufficientFreePagesException{
     	pageLock.acquire();
     	
@@ -138,6 +141,9 @@ public class UserKernel extends ThreadedKernel {
     	}
     }
     
+    /**
+     * TODO comments
+     */
     public void releasePageTable(TranslationEntry[] pageTable){
     	pageLock.acquire();
     	
@@ -157,6 +163,6 @@ public class UserKernel extends ThreadedKernel {
     // dummy variables to make javac smarter
     private static Coff dummy1 = null;
     
-    public LinkedList<TranslationEntry> globalFreePageList; //TODO should this be static?
+    public LinkedList<TranslationEntry> globalFreePageList;
     public Lock pageLock;
 }
