@@ -20,8 +20,8 @@ int main(){
 
 	int bytesRead = read(location, buf, 1024);
 
-	printf( "bytesRead: " + bytesRead);
-
+	printf("%d\n", bytesRead);
+	
 	printf("File Read");
 
 	return 0;
