@@ -198,10 +198,16 @@ public class UserProcess {
      */
     public int readVirtualMemory(int vaddr, byte[] data, int offset,
 				 int length) {
+		//Acquire the lock
 		memoryLock.acquire();
+
+		//Call the accessMemory method with isRead set to true
 		int amount = accessMemory(vaddr, data, offset, length, true);
+		
+		//Release the lock
 		memoryLock.release();
 
+		//Return the amount of bytes read
 		return amount;
     }
 
@@ -234,10 +240,16 @@ public class UserProcess {
      */
     public int writeVirtualMemory(int vaddr, byte[] data, int offset,
 				  int length) {
+		//Acquire the lock
 		memoryLock.acquire();
+		
+		//Call the accessMemory method with isRead set to false
 		int amount = accessMemory(vaddr, data, offset, length, false);
+
+		//Release the lock
 		memoryLock.release();
 
+		//Return the amount of bytes written
 		return amount;
     }
 
@@ -338,38 +350,47 @@ public class UserProcess {
      */
 	protected boolean loadSections() {
 	
-	
+		//If there isn't enough memory to load a new process
 		if(numPages > Machine.processor().getNumPhysPages()) {
+		    //Close the file, print to screen, and return false
 		    coff.close();
 		    Lib.debug(dbgProcess, "\tinsufficient physical memory");
 		    return false;
 		}
 
-	// load sections
+		//Try to get pages for the pageTable
 		try{
+			//Call the UserKernel.getPages method to allocate free pages
 			pageTable = ((UserKernel)Kernel.kernel).getPages(numPages);
 		}
+		//Catch the exception if there aren't enough pages to satisfy the request
 		catch(InsufficientFreePagesException e){
+			//Close the file and return false
 			coff.close();
 			return false;
 		}
 	
+		//Populate the pageTable's vpn with numbers from 0 to length-1
 		for(int i = 0; i < pageTable.length; i++)
 			pageTable[i].vpn = i;
 
+		//Iterate through each section
 		for (int s=0; s<coff.getNumSections(); s++) {
+			//Get the section
 			CoffSection section = coff.getSection(s);
 	    
 			Lib.debug(dbgProcess, "\tinitializing " 
 			+ section.getName() + 
 			" section (" + section.getLength() + " pages)");
-
+			
+			//Load the pages
 			for (int i=0; i<section.getLength(); i++) {
 				int vpn = section.getFirstVPN()+i;
 				section.loadPage(i, pageTable[vpn].ppn);
 			}
 		}
 
+		//Return true since the operation was successful
 		return true;
 	}
 
