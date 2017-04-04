@@ -461,7 +461,11 @@ public class UserProcess {
     }
     
     /**
-     * TODO comments
+     * This method begins by ensuring that the address of the file name
+     * is valid by running it through addressChecker(). Then the location
+     * of the last null index and location of the file named fileName are
+     * stored. If the file is found and not marked for death then its 
+     * numReferences is incremented. If the file is not found 
      */
     private int openFile(int fileNamePtr, boolean isCreating){
     	addressChecker(fileNamePtr);
@@ -476,8 +480,9 @@ public class UserProcess {
     			globalFileIndex = index;
     	}
     	
-    	if(globalFileIndex != -1 && !globalFileRefArray[globalFileIndex].markedForDeath)
-    		globalFileRefArray[globalFileIndex].numReferences++;
+    	if(globalFileIndex != -1)
+    		if(!globalFileRefArray[globalFileIndex].markedForDeath)
+    			globalFileRefArray[globalFileIndex].numReferences++;
        	else{
     		if(nullIndex == -1)
     			return -1;
