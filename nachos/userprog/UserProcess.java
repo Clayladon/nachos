@@ -95,30 +95,48 @@ public class UserProcess {
     }
     
     /**
-     * TODO comments
+     * This method is responsible for every memory access executed by a user process. First
+     * the virtual addesses are translated into physical addresses which is then validated.
+     * If the address is valid the method accesses the physical memory. If isRead is set
+     * to true then a section of memory is copied into data via the arraycopy method.
+     * If isRead is false and the page isn't readOnly, data is copied into a section of
+     * physical memory again via arraycopy. The return value is the amount of bytes accessed.
      */
     public int accessMemory(int vaddr, byte[] data, int offset, int length, boolean isRead){
+    	//Get the virtual page number and virtual offset
     	int vpn = vaddr / pageSize;
     	int vOffset = vaddr % pageSize;
     	
-    	TranslationEntry entry = pageTable[vpn];
+    	//Access the entry being accessed and set its used field to true
+    	TranslationEntry entry = pageTable[vpn]; 
     	entry.used = true;
+    	
+    	//Calculate the physical address and memory available
     	int addr = entry.ppn * pageSize + vOffset;
     	byte[] memory = Machine.processor().getMemory();
     	
+    	//If the physical address is out of bounds return 0
     	if(addr < 0 || addr > memory.length || !entry.valid)
     		return 0;
     		
+    	//Set the amount of bytes accessed
     	int amount = Math.min(length, memory.length - addr);
     	
+    	//If the method is reading
     	if(isRead)
+    		//Copy from memory into data
     		System.arraycopy(memory, addr, data, offset, amount);
+    	//If the method is writing
     	else
-    		if(entry.readOnly)
+    		//And the page is not readOnly
+    		if(!entry.readOnly)
+    			//Copy into memory from data
     			System.arraycopy(data, offset, memory, addr, amount);
     		else
+    			//If if is read only return 0
     			return 0;
-    	
+    			
+    	//Finally return the amount of bytes accessed
     	return amount;
     }
 
