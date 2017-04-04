@@ -88,6 +88,9 @@ public class UserProcess {
 	Machine.processor().setPageTable(pageTable);
     }
     
+    /**
+     * TODO comments
+     */
     public int accessMemory(int vaddr, byte[] data, int offset, int length, boolean isRead){
     	int vpn = vaddr / pageSize;
     	int vOffset = vaddr % pageSize;
@@ -375,7 +378,9 @@ public class UserProcess {
 	processor.writeRegister(Processor.regA1, argv);
     }
 
-	
+	/**
+     * TODO comments
+     */
 	public void addressChecker(int addr){
 		int pageNum = Processor.pageFromAddress(addr);
 		if(pageNum >= numPages || pageNum < 0)
@@ -395,14 +400,23 @@ public class UserProcess {
 	return 1;
     }
     
+    /**
+     * TODO comments
+     */
     private int handleCreate(int fileNamePtr){
     	return openFile(fileNamePtr, true);
     }
     
+    /**
+     * TODO comments
+     */
     private int handleOpen(int fileNamePtr){
     	return openFile(fileNamePtr, false);
     }
     
+    /**
+     * TODO comments
+     */
     private int openFile(int fileNamePtr, boolean isCreating){
     	addressChecker(fileNamePtr);
     	String fileName = readVirtualMemoryString(fileNamePtr, 256);
@@ -437,6 +451,9 @@ public class UserProcess {
     	return localFileIndex;
     }		
     
+    /**
+     * TODO comments
+     */
     public int handleRead(int fileIndex, int bufferPtr, int size){
     	addressChecker(bufferPtr);
     	if(fileIndex < 0 || fileIndex > 15 || localFileArray[fileIndex] == null)
@@ -455,6 +472,9 @@ public class UserProcess {
     	return bytesRead;
     }
     
+    /**
+     * TODO comments
+     */
     public int handleWrite(int fileIndex, int bufferPtr, int size){
     	addressChecker(bufferPtr);
     	if(fileIndex < 0 || fileIndex > 15 || localFileArray[fileIndex] == null)
@@ -468,14 +488,23 @@ public class UserProcess {
     	return bytesWritten;
     }
     
+    /**
+     * TODO comments
+     */
     public int handleClose(int fileIndex){
     	return closeFile(fileIndex, false);
     }
     
+    /**
+     * TODO comments
+     */
     public int handleUnlink(int fileIndex){
     	return closeFile(fileIndex, true);
     }
     
+    /**
+     * TODO comments
+     */
     public int closeFile(int fileIndex, boolean isUnlinking){
     	if(fileIndex < 0 || fileIndex > 15 || localFileArray[fileIndex] == null)
     		return -1;
@@ -509,6 +538,9 @@ public class UserProcess {
     	return 0;
     }
     
+    /**
+     * TODO comments
+     */
     public int handleExec(int fileNamePtr, int argc, int argvPtr){
     	int[] arguPtrs = new int[argc];
     	
@@ -539,6 +571,9 @@ public class UserProcess {
     	return createChild.processID;
     }
     
+    /**
+     * TODO comments
+     */
     public int handleJoin(int processID, int statusPtr){
 
     	ChildProcess child = children.get(processID);
@@ -555,6 +590,9 @@ public class UserProcess {
     	return 1;
     }
     
+    /**
+     * TODO comments
+     */
     public void joinProcess(){
     	joinLock.acquire();
     	while(!hasExited)
@@ -562,6 +600,9 @@ public class UserProcess {
     	joinLock.release();
     }
     
+    /**
+     * TODO comments
+     */
     public int handleExit(int status){
     	joinLock.acquire();
     	
@@ -672,25 +713,25 @@ public class UserProcess {
      * @param	cause	the user exception that occurred.
      */
     public void handleException(int cause) {
-	Processor processor = Machine.processor();
+		Processor processor = Machine.processor();
 
-	switch (cause) {
-	case Processor.exceptionSyscall:
-	    int result = handleSyscall(processor.readRegister(Processor.regV0),
+		switch (cause) {
+			case Processor.exceptionSyscall:
+	    		int result = handleSyscall(processor.readRegister(Processor.regV0),
 				       processor.readRegister(Processor.regA0),
 				       processor.readRegister(Processor.regA1),
 				       processor.readRegister(Processor.regA2),
 				       processor.readRegister(Processor.regA3)
 				       );
-	    processor.writeRegister(Processor.regV0, result);
-	    processor.advancePC();
-	    break;				       
+	    		processor.writeRegister(Processor.regV0, result);
+	    		processor.advancePC();
+	    		break;				       
 				       
-	default:
-	    Lib.debug(dbgProcess, "Unexpected exception: " +
-		      Processor.exceptionNames[cause]);
-	    Lib.assertNotReached("Unexpected exception");
-	}
+			default:
+	    		Lib.debug(dbgProcess, "Unexpected exception: " +
+						Processor.exceptionNames[cause]);
+	    		Lib.assertNotReached("Unexpected exception");
+		}
     }
 
     /** The program being run by this process. */
