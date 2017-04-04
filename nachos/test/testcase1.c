@@ -5,7 +5,7 @@
 int main(){
 	
 	int location = open("hello.c");
-	write(1,0,1024);
 	
+	prinf("\n" + location);
 	return 0;
 }
