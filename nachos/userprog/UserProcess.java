@@ -35,11 +35,12 @@ public class UserProcess {
     	localFileArray = new OpenFile[16];
     	globalFileRefArray = new FileReference[16];
     	
-
-	localFileArray[0] = UserKernel.console.openForReading();
-	localFileArray[1] = UserKernel.console.openForWriting();
-	globalFileRefArray[0] = new FileReference(localFileArray[0].getName());
-	globalFileRefArray[1] = new FileReference(localFileArray[1].getName());
+		localFileArray[0] = UserKernel.console.openForReading();
+		localFileArray[1] = UserKernel.console.openForWriting();
+		globalFileRefArray[0] = new FileReference(localFileArray[0].getName());
+		globalFileRefArray[1] = new FileReference(localFileArray[1].getName());
+    
+    
     	//Task 2
     	memoryLock = new Lock();
 	
