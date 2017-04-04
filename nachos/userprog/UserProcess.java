@@ -3,7 +3,7 @@ package nachos.userprog;
 import nachos.machine.*;
 import nachos.threads.*;
 import nachos.userprog.*;
-
+import nachos.userprog.UserKernel.InsufficientFreePagesException;
 import java.io.EOFException;
 import java.util.HashMap;
 
@@ -308,30 +308,42 @@ public class UserProcess {
      *
      * @return	<tt>true</tt> if the sections were successfully loaded.
      */
-    protected boolean loadSections() { //TODO Modify for task 2
-	if (numPages > Machine.processor().getNumPhysPages()) {
-	    coff.close();
-	    Lib.debug(dbgProcess, "\tinsufficient physical memory");
-	    return false;
-	}
+	protected boolean loadSections() { //TODO Modify for task 2
+	
+	
+		if(numPages > Machine.processor().getNumPhysPages()) {
+		    coff.close();
+		    Lib.debug(dbgProcess, "\tinsufficient physical memory");
+		    return false;
+		}
 
 	// load sections
-	for (int s=0; s<coff.getNumSections(); s++) {
-	    CoffSection section = coff.getSection(s);
-	    
-	    Lib.debug(dbgProcess, "\tinitializing " + section.getName()
-		      + " section (" + section.getLength() + " pages)");
-
-	    for (int i=0; i<section.getLength(); i++) {
-		int vpn = section.getFirstVPN()+i;
-
-		// for now, just assume virtual addresses=physical addresses
-		section.loadPage(i, vpn);
-	    }
-	}
+		try{
+			pageTable = ((UserKernel)Kernel.kernel).getPages(numPages);
+		}
+		catch(InsufficientFreePagesException e){
+			coff.close();
+			return false;
+		}
 	
-	return true;
-    }
+		for(int i = 0; i < pageTable.length; i++)
+			pageTable[i].vpn = i;
+
+		for (int s=0; s<coff.getNumSections(); s++) {
+			CoffSection section = coff.getSection(s);
+	    
+			Lib.debug(dbgProcess, "\tinitializing " 
+			+ section.getName() + 
+			" section (" + section.getLength() + " pages)");
+
+			for (int i=0; i<section.getLength(); i++) {
+				int vpn = section.getFirstVPN()+i;
+				section.loadPage(i, pageTable[vpn].ppn);
+			}
+		}
+
+		return true;
+	}
 
     /**
      * Release any resources allocated by <tt>loadSections()</tt>.
