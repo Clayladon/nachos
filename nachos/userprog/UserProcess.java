@@ -308,7 +308,7 @@ public class UserProcess {
      *
      * @return	<tt>true</tt> if the sections were successfully loaded.
      */
-	protected boolean loadSections() { //TODO Modify for task 2
+	protected boolean loadSections() {
 	
 	
 		if(numPages > Machine.processor().getNumPhysPages()) {
@@ -349,7 +349,7 @@ public class UserProcess {
      * Release any resources allocated by <tt>loadSections()</tt>.
      */
     protected void unloadSections() {
-    	((UserKernel)Kernel.kernel).releasePageTable(pageTable); //TODO Fix
+    	((UserKernel)Kernel.kernel).releasePageTable(pageTable);
     }    
 
     /**
@@ -378,8 +378,8 @@ public class UserProcess {
 	
 	public void addressChecker(int addr){
 		int pageNum = Processor.pageFromAddress(addr);
-		//if(pageNum >= numPages || pageNum < 0)
-			//handleExit(-1); //TODO uncomment
+		if(pageNum >= numPages || pageNum < 0)
+			handleExit(-1);
 	}
 
     /**
