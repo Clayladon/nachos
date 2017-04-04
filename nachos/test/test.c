@@ -26,5 +26,7 @@ int main(){
 		printf(buf[i]);
 	}
 
+	printf("File Read");
+
 	return 0;
 }
