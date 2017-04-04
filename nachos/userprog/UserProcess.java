@@ -520,7 +520,8 @@ public class UserProcess {
     		return -1;
     	
     	byte[] storage = new byte[size];
-    	
+    
+	System.out.println("Before openFile.read");	
     	int bytesRead = localFileArray[fileIndex].read(storage, 0, size);
        	if(bytesRead == -1)
     		return -1;
