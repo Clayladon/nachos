@@ -18,7 +18,7 @@ int main(){
 
 	char *buf[1024];
 
-	int bytesRead = read(location, buf, 1024);
+	int bytesRead = read(location, buf);
 
 	printf(bytesRead);
 	int i = 0;
