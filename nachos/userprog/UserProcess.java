@@ -445,15 +445,21 @@ public class UserProcess {
     private int openFile(int fileNamePtr, boolean isCreating){
     	addressChecker(fileNamePtr);
     	String fileName = readVirtualMemoryString(fileNamePtr, 256);
+	System.out.println(fileName);
     	int globalFileIndex = -1;
     	int nullIndex = -1;
     	
-    	for(int index = 0; index < globalFileRefArray.length; index++){
-    		if(globalFileRefArray[index] == null)
+    	for(int index = 2; index < globalFileRefArray.length; index++){
+    		if(globalFileRefArray[index] == null){
     			nullIndex = index;
-    		if(globalFileRefArray[index].fileName == fileName)
-    			globalFileIndex = index;
+		}
+		if(globalFileRefArray[index] != null){
+    			if(globalFileRefArray[index].fileName == fileName){
+    				globalFileIndex = index;
+			}
+		}		
     	}
+	System.out.println(nullIndex + ", " + globalFileIndex);
     	
     	if(globalFileIndex != -1 && !globalFileRefArray[globalFileIndex].markedForDeath)
     		globalFileRefArray[globalFileIndex].numReferences++;
@@ -461,6 +467,7 @@ public class UserProcess {
     		if(nullIndex == -1)
     			return -1;
     		globalFileRefArray[nullIndex] = new FileReference(fileName);
+		System.out.println("New FileReference added");
     	}
     	
     	int localFileIndex = -1;
@@ -472,6 +479,8 @@ public class UserProcess {
     		return -1;
     	
     	localFileArray[localFileIndex] = UserKernel.fileSystem.open(fileName, isCreating);
+
+	System.out.println("openFile method complete");
     	
     	return localFileIndex;
     }		
@@ -540,9 +549,12 @@ public class UserProcess {
     	localFileArray[fileIndex] = null;
     	
     	int globalFileIndex = -1;
-    	for(int index = 0; index < globalFileRefArray.length; index++)
-    		if(globalFileRefArray[index].fileName == fileName)
-    			globalFileIndex = index;
+    	for(int index = 0; index < globalFileRefArray.length; index++){
+		if(globalFileRefArray[index] != null){
+    			if(globalFileRefArray[index].fileName == fileName)
+    				globalFileIndex = index;
+		}
+	}
     	
     	if(globalFileIndex == -1)
     		return -1;
