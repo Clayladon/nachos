@@ -21,7 +21,8 @@ public class UserKernel extends ThreadedKernel {
 
     /**
      * Initialize this kernel. Creates a synchronized console and sets the
-     * processor's exception handler.
+     * processor's exception handler. Also sets the globalFreePageList with
+     * fresh TranslationEntries.
      */
     public void initialize(String[] args) {
 		super.initialize(args);
@@ -32,11 +33,14 @@ public class UserKernel extends ThreadedKernel {
 			public void run() { exceptionHandler(); }
 		    });
 	    
-		
+		//Get the number of physical pages available 
 		int numPages = Machine.processor().getNumPhysPages();
+		
+		//Fills the globalFreePageList with new TranslationEntries
 		for(int i=0; i<numPages; ++i)
 			globalFreePageList.add(new TranslationEntry(0, i, false, false, false, false));
 		
+		//Initialize the pageLock
 		pageLock = new Lock();
     }
 
@@ -119,30 +123,44 @@ public class UserKernel extends ThreadedKernel {
     }
     
     /**
-     * TODO comments
+     * This method is responsible for allocating free pages to user processes. A user process
+     * makes a call to this method when it needs more memory. If there are enough free physical
+     * pages to satisfy the request, a TranslationEntry array is returned. The requested pages
+     * are then added to the user process' pageTable. If there aren't enough pages the method
+     * throws an InsufficientFreePagesException.
      */
     public TranslationEntry[] getPages(int amount) throws InsufficientFreePagesException{
+    	//Acquire the lock
     	pageLock.acquire();
     	
+    	//If there are enough pages left to accomodate the request
     	if(!globalFreePageList.isEmpty() && globalFreePageList.size() >= amount){
+    		//Create a new array of the requested pages
     		TranslationEntry[] requestedPages = new TranslationEntry[amount];
     		
+    		//Cycle through the pages to remove them from the free pages and validate them
     		for(int i=0; i<requestedPages.length; ++i){
     			requestedPages[i] = globalFreePageList.remove();
     			requestedPages[i].valid = true;
     		}
     		
+    		//Release the lock and return the requested pages
     		pageLock.release();
     		return requestedPages;
     	}
+    	//If there are not enough pages left to accomodate the reques
     	else{
+    		//Release the lock and throw an InsufficientFreePagesException
     		pageLock.release();
     		throw new InsufficientFreePagesException();
     	}
     }
     
     /**
-     * TODO comments
+     * This method releases a user process' pages. It takes the user process' pageTable
+     * and adds all of its elements to the globalFreePageList. It also sets each element's
+     * valid flag to false and fills the array with nulls. This ensures that the released
+     * pages cannot be accessed without first being reallocated by the UserKernel.
      */
     public void releasePageTable(TranslationEntry[] pageTable){
     	pageLock.acquire();
@@ -163,6 +181,7 @@ public class UserKernel extends ThreadedKernel {
     // dummy variables to make javac smarter
     private static Coff dummy1 = null;
     
+    //Custom variables
     public LinkedList<TranslationEntry> globalFreePageList;
     public Lock pageLock;
 }
