@@ -6,6 +6,6 @@ int main(){
 	
 	int location = open("hello.c");
 	
-	prinf("\n" + location);
+	printf("\n" + location);
 	return 0;
 }
