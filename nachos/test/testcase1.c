@@ -6,13 +6,14 @@
 char buf[1024];
 
 int main(){
-	
+	int i;	
+	printf("start\n");
 	int location = open("hello.c");
-	
+	printf("post Open\n");
 	int bytesRead = read(location, buf,1024);
-
-	for(int i = 0; i < bytesRead; ++i){
-		printf(buf[i]);
+	printf("Post read\n");
+	for(i = 0; i < bytesRead; ++i){
+		printf("a");
 	}
 	printf("\n");
 
