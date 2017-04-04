@@ -20,6 +20,7 @@ int main(){
 
 	int bytesRead = read(location, buf, 1024);
 
+	printf(bytesRead);
 	int i = 0;
 	for(i = 0; i < bytesRead; ++i){
 
