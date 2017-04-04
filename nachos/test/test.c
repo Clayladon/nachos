@@ -18,9 +18,9 @@ int main(){
 
 	char *buf[1024];
 
-	int bytesRead = read(location, buf, 127);
+	int bytesRead = read(location, buf, 1024);
 
-	printf(bytesRead);
+	printf( " " + bytesRead);
 
 	printf("File Read");
 
