@@ -337,7 +337,7 @@ public class UserProcess {
      * Release any resources allocated by <tt>loadSections()</tt>.
      */
     protected void unloadSections() {
-    	UserKernel.releasePageTable(pageTable); //TODO Fix
+    	((UserKernel)Kernel.kernel).releasePageTable(pageTable); //TODO Fix
     }    
 
     /**
