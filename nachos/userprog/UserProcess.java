@@ -889,18 +889,6 @@ public class UserProcess {
 		//Read the first 4 bytes of vpn 1, should read GOOD		
 		bytesRead = readVirtualMemory(pageSize, last4, 0, last4.length);
 		System.out.println("OverFlow Test: " + new String(last4));
-
-
-		//read and write from an invalid address (negative address)
-
-		
-		//Try to read and write with an offset = pageSize
-
-		//Try to read and write with an offset > pageSize
-
-		//Try to read and write with a negative offset
-
-		//Try to read and write a negative length
 	}
 	
     /** The program being run by this process. */
