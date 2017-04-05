@@ -17,10 +17,10 @@ int main(){
 	printf("Bytes read: %d\n", bytesRead);
 	printf("Contents of text.txt:\n%s\n", buffer);
 
-	char buffer[] = {'H','E','L','L','O',' ','W','O','R','L','D','!','\n'};
-	char *buf = &buffer[0];
+	char buffer2[] = {'H','E','L','L','O',' ','W','O','R','L','D','!','\n'};
+	char *buf2 = &buffer2[0];
 
-	int bytesWritten = write(4, buf, 13);
+	int bytesWritten = write(4, buf2, 13);
 
 	printf("Bytes written: %d\n", bytesWritten);
 
