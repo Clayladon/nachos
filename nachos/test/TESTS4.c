@@ -11,9 +11,8 @@ int main(){
 
 	int status = 0;
 	int *sts = &status;
-	join(num,sts);
 
-	printf("Success\n");
+	printf("\nSuccess\n");
 	
 	return 0;
 }
