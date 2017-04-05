@@ -479,15 +479,18 @@ public class UserProcess {
     			nullIndex = index;
 		}
 		if(globalFileRefArray[index] != null){
-    			if(globalFileRefArray[index].fileName == fileName){
+    			if(globalFileRefArray[index].fileName.equals(fileName)){
     				globalFileIndex = index;
 			}
 		}		
     	}
-    	
-    	if(globalFileIndex != -1)
+    	if(globalFileIndex != -1){
+
     		if(!globalFileRefArray[globalFileIndex].markedForDeath)
     			globalFileRefArray[globalFileIndex].numReferences++;
+    	
+		System.out.println("#FileRefs to: " + fileName + " is : " + globalFileRefArray[globalFileIndex].numReferences);	
+	}
        	else{
     		if(nullIndex == -1)
     			return -1;
@@ -570,7 +573,7 @@ public class UserProcess {
      * TODO comments
      */
     public int closeFile(int fileIndex, boolean isUnlinking){
-    	if(fileIndex < 0 || fileIndex > 15 || localFileArray[fileIndex] == null)
+    	if((fileIndex < 0 || fileIndex > 15 || localFileArray[fileIndex] == null) && !isUnlinking)
     		return -1;
     	
 	String fileName = null;
@@ -582,11 +585,13 @@ public class UserProcess {
     		localFileArray[fileIndex] = null;
 	}
 	else{
+		System.out.println("About to unlink");
     		fileName = readVirtualMemoryString(fileIndex, 256);
 		System.out.println("Trying to Unlink: " + fileName);
 		for(int i = 0; i < localFileArray.length; ++i){
 			if(localFileArray[i] != null){
 				if(localFileArray[i].getName().equals(fileName)){
+					System.out.println("Closing local file");
 					localFileArray[i].close();
 					localFileArray[i] = null;
 				}
@@ -598,18 +603,20 @@ public class UserProcess {
     	int globalFileIndex = -1;
     	for(int index = 0; index < globalFileRefArray.length; index++){
 		if(globalFileRefArray[index] != null){
-    			if(globalFileRefArray[index].fileName == fileName)
+    			if(globalFileRefArray[index].fileName.equals(fileName))
     				globalFileIndex = index;
 		}
 	}
-    	
+    	System.out.println("GlobalFileIndex: " + globalFileIndex);
     	if(globalFileIndex == -1)
     		return -1;
     	
+    	System.out.println("#FileRefs to: " + fileName + " is : " + globalFileRefArray[globalFileIndex].numReferences);	
     	if(isUnlinking)
     		globalFileRefArray[globalFileIndex].markedForDeath = true;
     		
     	globalFileRefArray[globalFileIndex].numReferences--;
+    	System.out.println("#FileRefs to: " + fileName + " is : " + globalFileRefArray[globalFileIndex].numReferences);	
     	
     	if(globalFileRefArray[globalFileIndex].numReferences == 0){
     		if(globalFileRefArray[globalFileIndex].markedForDeath){
