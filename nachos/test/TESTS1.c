@@ -29,7 +29,7 @@ int main(){
 
 	//Close ofd and unlink fd/ Close both instances of the OpenFile
 	int cls = close(ofd);
-	int unlk = unlink(fd);
+	int unlk = unlink(fptr);
 
 	//Imaginary should no longer be in the FileSystem
 	int status = open(fptr);
