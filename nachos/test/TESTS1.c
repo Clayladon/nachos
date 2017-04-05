@@ -11,7 +11,7 @@ int main(){
 	int fd = open(fptr);
 	
 	if(fd != -1){
-		printf("Failure1\nfd = %d", fd);
+		printf("Failure1\n");
 		exit(0);
 	}
 
@@ -19,15 +19,29 @@ int main(){
 	fd = creat(fptr);
 
 	if(fd == -1){
-		printf("Failure\n");
+		printf("Failure2\n");
 		exit(0);
 	}
 
-	//Open Imaginary, compare File Descriptor to fd
-
+	//Open Imaginary, should open a second reference to fptr
 	int ofd = open(fptr);
-
 	printf("fd = %d\nofd = %d\n", fd, ofd);
+
+	//Close ofd and unlink fd/ Close both instances of the OpenFile
+	int cls = close(ofd);
+	int unlk = unlink(fd);
+
+	//Imaginary should no longer be in the FileSystem
+	int status = open(fptr);
+
+	//If status = -1, then Imaginary does not exist which is
+	//the desired outcome
+
+	if(status != -1)
+		printf("Failure3\n");
+		exit(0);
+
+
 
 	return 0;
 }
