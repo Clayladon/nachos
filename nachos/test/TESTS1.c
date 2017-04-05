@@ -9,9 +9,9 @@ int main(){
 
 	//Imaginary is not an existing file
 	int fd = open(fptr);
-
+	
 	if(fd != -1){
-		printf("Failure\n");
+		printf("Failure1\nfd = %d", fd);
 		exit(0);
 	}
 
