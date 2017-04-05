@@ -471,7 +471,6 @@ public class UserProcess {
     private int openFile(int fileNamePtr, boolean isCreating){
     	addressChecker(fileNamePtr);
     	String fileName = readVirtualMemoryString(fileNamePtr, 256);
-	System.out.println(fileName);
     	int globalFileIndex = -1;
     	int nullIndex = -1;
     	
@@ -485,7 +484,6 @@ public class UserProcess {
 			}
 		}		
     	}
-	System.out.println(nullIndex + ", " + globalFileIndex);
     	
     	if(globalFileIndex != -1)
     		if(!globalFileRefArray[globalFileIndex].markedForDeath)
@@ -493,8 +491,7 @@ public class UserProcess {
        	else{
     		if(nullIndex == -1)
     			return -1;
-    		globalFileRefArray[nullIndex] = new FileReference(fileName);
-		System.out.println("New FileReference added");
+		
     	}
     	
     	int localFileIndex = -1;
@@ -506,10 +503,13 @@ public class UserProcess {
     		return -1;
     	
     	localFileArray[localFileIndex] = UserKernel.fileSystem.open(fileName, isCreating);
-
-	System.out.println("openFile method complete");
-    	
-    	return localFileIndex;
+	if(localFileArray[localFileIndex] != null){
+		
+    		globalFileRefArray[nullIndex] = new FileReference(fileName);
+		return localFileIndex;
+	}
+	else
+		 return -1;
     }		
     
     /**
@@ -562,8 +562,8 @@ public class UserProcess {
     /**
      * TODO comments
      */
-    public int handleUnlink(int fileIndex){
-    	return closeFile(fileIndex, true);
+    public int handleUnlink(int fileNamePtr){
+    	return closeFile(fileNamePtr, true);
     }
     
     /**
@@ -572,11 +572,28 @@ public class UserProcess {
     public int closeFile(int fileIndex, boolean isUnlinking){
     	if(fileIndex < 0 || fileIndex > 15 || localFileArray[fileIndex] == null)
     		return -1;
-    		
-    	String fileName = localFileArray[fileIndex].getName();
     	
-    	localFileArray[fileIndex].close();
-    	localFileArray[fileIndex] = null;
+	String fileName = null;
+
+	if(!isUnlinking){
+    		fileName = localFileArray[fileIndex].getName();
+		System.out.println("Trying to close: " + fileName);
+    		localFileArray[fileIndex].close();
+    		localFileArray[fileIndex] = null;
+	}
+	else{
+    		fileName = readVirtualMemoryString(fileIndex, 256);
+		System.out.println("Trying to Unlink: " + fileName);
+		for(int i = 0; i < localFileArray.length; ++i){
+			if(localFileArray[i] != null){
+				if(localFileArray[i].getName().equals(fileName)){
+					localFileArray[i].close();
+					localFileArray[i] = null;
+				}
+			}
+		}
+	}
+    	
     	
     	int globalFileIndex = -1;
     	for(int index = 0; index < globalFileRefArray.length; index++){

@@ -11,7 +11,7 @@ int main(){
 	//Attempt to create with invalid filename
 	int fd = creat(fptr);
 
-	if(fd == -1){
+	if(fd != -1){
 		printf("Failure1\n");
 		exit(0);
 	}
