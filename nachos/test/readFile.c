@@ -8,7 +8,7 @@ int main(){
 	char *fPtr = &filename[0];
 
 	int fd = open(fPtr);
-	printf("File descriptor: %i", fd);
+	printf("File descriptor: %d", fd);
 	
 	return 0;
 }
