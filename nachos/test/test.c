@@ -16,7 +16,7 @@ int main(){
 	
 	printf("Opened\n");
 
-	char *buf[1024];
+	int *buf[1024];
 
 	int bytesRead = read(location, buf, 1024);
 
@@ -28,7 +28,7 @@ int main(){
 
 	int i;
 	for(i = 0; i < 127; ++i){
-		printf((char)buf[i]);
+		printf("%d", buf[i]);
 	}
 
 	return 0;
