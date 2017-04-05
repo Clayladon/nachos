@@ -9,10 +9,10 @@ int main(){
 
 	int fd = creat(fPtr);
 	printf("File descriptor: %d\n", fd);
-	char buffer[] = {'H','E','L','L','O','!','\0'};
+	char buffer[] = {'H','E','L','L','O','!','\n','\0'};
 	char *buf = &buffer[0];
 
-	int bytesWritten = write(fd, buf, 7);
+	int bytesWritten = write(fd, buf, 8);
 
 	printf("Bytes written: %d\n", bytesWritten);
 
