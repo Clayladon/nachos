@@ -9,5 +9,7 @@ int main(){
 	char *fptr = &fname[0];
 	int num = exec(fptr,0,null);
 	
-	return exit(0);
+	exit(0);
+
+	return 0;
 }
