@@ -457,7 +457,6 @@ public class UserProcess {
 			return 0;
 		}
 	
-	Lib.assertNotReached("Machine.halt() did not halt machine!");
 	return 1;
     }
     
