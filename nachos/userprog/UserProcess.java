@@ -201,7 +201,15 @@ public class UserProcess {
 		memoryLock.acquire();
 
 		//Call the accessMemory method with isRead set to true
-		int amount = accessMemory(vaddr, data, offset, length, true);
+		int pages = ((length + vaddr%pageSize)/pageSize)+1;
+		int firstLength = Math.min(length, pageSize - vaddr%pageSize);
+
+		int amount = accessMemory(vaddr, data, offset, firstLength, true);
+		if(pages > 1){
+			for(int i = 1; i < pages; ++i){
+				amount += accessMemory((vaddr/pageSize +i*pageSize), data, offset+amount, Math.min(length-amount, pageSize), true);
+			}
+		}
 		
 		//Release the lock
 		memoryLock.release();
@@ -241,11 +249,17 @@ public class UserProcess {
 				  int length) {
 		//Acquire the lock
 		memoryLock.acquire();
-		System.out.println("Length: " + length);	
-		//Call the accessMemory method with isRead set to false
-		int amount = accessMemory(vaddr, data, offset, length, false);
 
-		System.out.println("Amount: " + amount);
+		int pages = ((length + vaddr%pageSize)/pageSize)+1;
+		int firstLength = Math.min(length, pageSize - vaddr%pageSize);
+
+		int amount = accessMemory(vaddr, data, offset, firstLength, false);
+		if(pages > 1){
+			for(int i = 1; i < pages; ++i){
+				amount += accessMemory((vaddr/pageSize +i*pageSize), data, offset+amount, Math.min(length-amount, pageSize), false);
+			}
+		}
+
 
 		//Release the lock
 		memoryLock.release();
@@ -522,10 +536,11 @@ public class UserProcess {
     	
     	//Open the file in the localFileArray with the isCreating boolean
     	localFileArray[localFileIndex] = UserKernel.fileSystem.open(fileName, isCreating);
+    	
 		//If the file was opened successfully
 		if(localFileArray[localFileIndex] != null){
-			//
-    		globalFileRefArray[nullIndex] = new FileReference(fileName);
+			if(globalFileIndex == -1)	
+    			globalFileRefArray[nullIndex] = new FileReference(fileName);
 			return localFileIndex;
 		}
 		else
@@ -842,6 +857,65 @@ public class UserProcess {
 		}
     }
 
+	public void selfTest(){
+
+		byte[] data = {'S','U','C','C','E','S','S'};
+		byte[] buffer = new byte[7];
+		
+	//	Write to memory, then read the same section
+	//	What was read should be what was written
+		int bytesWritten = writeVirtualMemory(0, data, 0, 7);
+		int bytesRead = readVirtualMemory(0,buffer,0,7);
+
+		String msg = new String(buffer);
+		System.out.println("Read Write Test: " + msg);
+
+		//Write more than a pages worth of bytes to memory
+		//compare bytes written to the length of the data
+		byte[] overFlow = new byte[pageSize + 4];
+
+		for(int i = 0; i < pageSize; ++i)
+			overFlow[i] = (byte)(i%255);
+
+		overFlow[pageSize] = 'G';
+		overFlow[pageSize+1] = 'O';
+		overFlow[pageSize+2] = 'O';
+		overFlow[pageSize+3] = 'D';
+
+		byte[] last4 = new byte[4];
+		last4[0] = overFlow[pageSize];
+		last4[1] = overFlow[pageSize+1];
+		last4[2] = overFlow[pageSize+2];
+		last4[3] = overFlow[pageSize+3];
+
+		bytesWritten = writeVirtualMemory(0, overFlow,0, overFlow.length);		System.out.println("Write OverFlow Test: GOOD");
+
+		for(int i = 0; i < overFlow.length: ++i)
+			overFlow[i] = 0;
+
+		//Read more than a pages worth of bytes from memory
+		bytesRead = readVirtualMemory(0,overFlow,0,overFlow.length);
+		System.out.println("Read OverFlow Test: " + bytesRead);
+
+		//write 16 bytes at an offset of 8
+		//Read 8 bytes from an offset of 16 & then from an
+		//offset of 8. 
+		//----> write xxxxyyyy 
+		//----> read  yyyyxxxx
+
+
+		//read and write from an invalid address (negative address)
+
+		
+		//Try to read and write with an offset = pageSize
+
+		//Try to read and write with an offset > pageSize
+
+		//Try to read and write with a negative offset
+
+		//Try to read and write a negative length
+	}
+	
     /** The program being run by this process. */
     protected Coff coff;
 
