@@ -466,53 +466,70 @@ public class UserProcess {
      * is valid by running it through addressChecker(). Then the location
      * of the last null index and location of the file named fileName are
      * stored. If the file is found and not marked for death then its 
-     * numReferences is incremented. If the file is not found 
+     * numReferences is incremented. An open space in the localFileArray
+     * is found and the file is then opened with the isCreating flag at
+     * that location in the process' localFileArray. If there are no errors
+     * the method will return the index in the localFileArray where the file
+     * was opened.
      */
     private int openFile(int fileNamePtr, boolean isCreating){
+    	//Validate file name address and get the file name from that address
     	addressChecker(fileNamePtr);
     	String fileName = readVirtualMemoryString(fileNamePtr, 256);
+    	//Set the indicies for the file and last null to -1
     	int globalFileIndex = -1;
     	int nullIndex = -1;
     	
+    	//Iterate through the globalFileRefArray
     	for(int index = 2; index < globalFileRefArray.length; index++){
+    		//If the space is empty, store that location
     		if(globalFileRefArray[index] == null){
     			nullIndex = index;
-		}
-		if(globalFileRefArray[index] != null){
+			}
+			if(globalFileRefArray[index] != null){
+				//If the space contains the file specified by fileName, store it
     			if(globalFileRefArray[index].fileName.equals(fileName)){
     				globalFileIndex = index;
-			}
-		}		
+				}
+			}		
     	}
+    	//If the file was found in the global array
     	if(globalFileIndex != -1){
-
+    		//And is not marked for death
     		if(!globalFileRefArray[globalFileIndex].markedForDeath)
+    			//Increment its references
     			globalFileRefArray[globalFileIndex].numReferences++;
-    	
-		System.out.println("#FileRefs to: " + fileName + " is : " + globalFileRefArray[globalFileIndex].numReferences);	
-	}
+    		
+				System.out.println("#FileRefs to: " + fileName + " is : " 
+						+ globalFileRefArray[globalFileIndex].numReferences);	
+		}
+		//If the file was not found, ensure that there is free space in the global array
        	else{
     		if(nullIndex == -1)
+    			//If there is no space return -1
     			return -1;
-		
     	}
-    	
+    	//Set the index for a free space in the local file array to -1
     	int localFileIndex = -1;
+    	//Find a free space in the local file array
     	for(int index = 0; index < localFileArray.length; index++)
     		if(localFileArray[index] == null)
     			localFileIndex = index;
     			
+    	//If there is no free space in the local file array, return -1
     	if(localFileIndex == -1)
     		return -1;
     	
+    	//Open the file in the localFileArray with the isCreating boolean
     	localFileArray[localFileIndex] = UserKernel.fileSystem.open(fileName, isCreating);
-	if(localFileArray[localFileIndex] != null){
-		
+		//If the file was opened successfully
+		if(localFileArray[localFileIndex] != null){
+			//
     		globalFileRefArray[nullIndex] = new FileReference(fileName);
-		return localFileIndex;
-	}
-	else
-		 return -1;
+			return localFileIndex;
+		}
+		else
+			return -1;
     }		
     
     /**
