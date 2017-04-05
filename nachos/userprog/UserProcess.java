@@ -122,7 +122,6 @@ public class UserProcess {
     		
     	//Set the amount of bytes accessed
     	int amount = Math.min(length, memory.length - addr);
-    	
     	//If the method is reading
     	if(isRead)
     		//Copy from memory into data
@@ -242,9 +241,11 @@ public class UserProcess {
 				  int length) {
 		//Acquire the lock
 		memoryLock.acquire();
-		
+		System.out.println("Length: " + length);	
 		//Call the accessMemory method with isRead set to false
 		int amount = accessMemory(vaddr, data, offset, length, false);
+
+		System.out.println("Amount: " + amount);
 
 		//Release the lock
 		memoryLock.release();
@@ -521,12 +522,14 @@ public class UserProcess {
     	
     	byte[] storage = new byte[size];
     
-	System.out.println("Before openFile.read");	
+	System.out.println( fileIndex + " Before openFile.read");	
     	int bytesRead = localFileArray[fileIndex].read(storage, 0, size);
+	System.out.println("\n\n" + bytesRead + " Made it past openFile.read");
        	if(bytesRead == -1)
     		return -1;
-    		
-    	int bytesWritten = writeVirtualMemory(bufferPtr, storage, 0, size);
+    	System.out.println("Size passed to wVM: " + size);
+    	int bytesWritten = writeVirtualMemory(bufferPtr, storage, 0, bytesRead);
+	System.out.println("\n\nMade it past writeVirtualMemory: " + bytesWritten);
     	if(bytesWritten != bytesRead)
     		return -1;
     		

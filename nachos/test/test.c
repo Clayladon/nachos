@@ -24,6 +24,13 @@ int main(){
 	
 	printf("File Read");
 
+	printf("\n\n\n\n\n\n\n\n\n\n");
+
+	int i;
+	for(i = 0; i < 127; ++i){
+		printf((char)buf[i]);
+	}
+
 	return 0;
 
 	//update
