@@ -33,7 +33,7 @@ int main(){
 	printf("cls: %d\n" , cls);
 
 	int unlk = unlink(fptr);
-	printf("cls: %d\n" , unlk);
+	printf("unlink: %d\n" , unlk);
 
 
 
