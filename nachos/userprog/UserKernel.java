@@ -50,8 +50,11 @@ public class UserKernel extends ThreadedKernel {
     public void selfTest() {
 	super.selfTest();
 	
-		UserProcess testP = new UserProcess();
+	UserProcess testP = null;	
+	if(Lib.test(vmTestChar)){
+		testP = new UserProcess();
 		testP.selfTest();
+	}
 
 	System.out.println("Testing the console device. Typed characters");
 	System.out.println("will be echoed until q is typed.");
@@ -65,7 +68,8 @@ public class UserKernel extends ThreadedKernel {
 	while (c != 'q');
 
 	System.out.println("");
-	testP.handleExit(0);
+	if(Lib.test(vmTestChar))
+		testP.handleExit(0);
 	
     }
 
@@ -189,4 +193,7 @@ public class UserKernel extends ThreadedKernel {
     //Custom variables
     public LinkedList<TranslationEntry> globalFreePageList;
     public Lock pageLock;
+
+	//debug flag
+	public static final char vmTestChar = 'j';
 }
