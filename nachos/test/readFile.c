@@ -15,6 +15,7 @@ int main(){
 	int bytesRead = read(fd, buf, 24);
 
 	printf("Bytes read: %d\n", bytesRead);
+	printf("Contents of text.txt:\n%s\n", buffer);
 
 	return 0;
 }
