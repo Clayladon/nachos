@@ -25,7 +25,7 @@ int main(){
 		exit(0);
 	}
 
-	int unlk = unlink(4);
+	int unlk = unlink(fptr);
 
 	if(unlk != -1){
 		printf("Failure3\n");
