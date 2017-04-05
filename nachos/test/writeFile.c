@@ -12,7 +12,7 @@ int main(){
 	char buffer[] = {'H','E','L','L','O',' ','W','O','R','L','D','!','\n','\0'};
 	char *buf = &buffer[0];
 
-	int bytesWritten = write(fd, buf, 13);
+	int bytesWritten = write(fd, buf, 14);
 
 	printf("Bytes written: %d\n", bytesWritten);
 
