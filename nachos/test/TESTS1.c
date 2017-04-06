@@ -10,7 +10,7 @@ int main(){
 	//Imaginary is not an existing file
 	int fd = open(fptr);
 
-	printf("Attempt at opening non-existent file: \n\tFile Descriptor: %d\n", fd);
+	printf("Attempt at opening non-existent file: \n\tFile Descriptor: %d\n\n", fd);
 	
 	if(fd != -1){
 		printf("Failure1\n");
@@ -19,7 +19,7 @@ int main(){
 
 	//Create Imaginary
 	fd = creat(fptr);
-	printf("Attempt at creating non-existent file: \n\tFile Descriptor: %d\n", fd);
+	printf("Attempt at creating non-existent file: \n\tFile Descriptor: %d\n\n", fd);
 
 	if(fd == -1){
 		printf("Failure2\n");
