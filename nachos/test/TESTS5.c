@@ -15,7 +15,7 @@ int main(){
 	int a = 1;
 	char args[1] = {'0'};
 	args[0] = (char)a;
-	argsPtr = &args[0];	
+	char *argsPtr = &args[0];	
 	int b = exec(fptrB,1, argsPtr);
 	int *br;
 
