@@ -52,7 +52,7 @@ int main(){
 	
 	}
 	unlink(fptr);
-
+	printf("unlinking: Imaginary");
 
 	//Imaginary should no longer be in the FileSystem
 	int status = open(fptr);
