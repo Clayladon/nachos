@@ -13,7 +13,7 @@ int main(){
 //	int *ar;
 //	int a = exec(fptrA,0,null);
 	char a = 12;
-	char *args[];
+	char *args[1];
 	args[0] = &a;
 	int b = exec(fptrB,1, args);
 	int *br;
