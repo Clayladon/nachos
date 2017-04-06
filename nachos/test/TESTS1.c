@@ -35,10 +35,9 @@ int main(){
 	int cfd = creat(fptr);
 	printf("Attempt at creating existing file: \n\tFile Descriptor: %d\n\n", cfd);
 
-	//Fill up local file array and try to overfill
 	int i; 
 	printf("\nOpen max amount of files\n\n");	
-	for(i = 0; i < 17; ++i){
+	for(i = 2; i < 13; ++i){
 		printf("File Descriptor: %d\n", open(fptr));
 	}	
 
