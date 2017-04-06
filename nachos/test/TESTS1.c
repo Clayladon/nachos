@@ -45,11 +45,12 @@ int main(){
 	
 
 	// Test unlink and close
-	unlink(fptr);
-	for(i = 2; i < 16; ++i){
+	for(i = 2; i < 15; ++i){
 		printf("Closing File Descriptor: %d\n", close(i));
 
+	
 	}
+	unlink(fptr);
 
 
 	//Imaginary should no longer be in the FileSystem
