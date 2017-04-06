@@ -46,7 +46,8 @@ int main(){
 
 	// Test unlink and close
 	for(i = 2; i < 15; ++i){
-		printf("Closing File Descriptor: %d\n", close(i));
+		close(i);
+		printf("Closing File Descriptor: %d\n", i);
 
 	
 	}
