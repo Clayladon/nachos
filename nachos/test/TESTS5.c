@@ -25,7 +25,7 @@ int main(){
 
 	printf("A's PID: %d\n", aPID);
 	printf("B's PID: %d\n", bPID);
-	printf("B's Return Code: %d\n", *br);
+	printf("A's Return Code: %d\nB's Return Code: %d\n", *ar, *br);
 	
 	return 0;
 }
