@@ -14,19 +14,19 @@ int main(){
 	int aPID = exec(fptrA,0,null);
 	join(aPID, ar);
 	
-	char a = (char)aPID;
-	char *args[1];
-	args[0] = &a;
+//	char a = (char)aPID;
+//	char *args[1];
+//	args[0] = &a;
 
-	int bPID = exec(fptrB,1, args);
-	int *br;
+//	int bPID = exec(fptrB,1, args);
+//	int *br;
 
 	
-	join(bPID, br);
+//	join(bPID, br);
 
 	printf("A's PID: %d\n", aPID);
-	printf("B's PID: %d\n", bPID);
-	printf("A's Return Code: %d\nB's Return Code: %d\n", *ar, *br);
+//	printf("B's PID: %d\n", bPID);
+	printf("A's Return Code: %d\n", *ar);
 	
 	return 0;
 }
