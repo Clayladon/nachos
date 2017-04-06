@@ -12,6 +12,8 @@ int main(){
 	
 	int *ar;
 	int aPID = exec(fptrA,0,null);
+	join(aPID, ar);
+	
 	char a = (char)aPID;
 	char *args[1];
 	args[0] = &a;
@@ -20,7 +22,6 @@ int main(){
 	int *br;
 
 	
-	join(aPID, ar);
 	join(bPID, br);
 
 	printf("A's PID: %d\n", aPID);
