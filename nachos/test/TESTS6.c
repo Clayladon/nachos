@@ -10,11 +10,11 @@ int main(){
 
 	int a = exec(fptr,0,null);
 
-	fileName[] = "hello.c";
-	fptr = &fileName[0];
+	char fileName2[] = "hello.c";
+	char *fptr2 = &fileName2[0];
 
-	int b = exec(fptr,-1, null);
-	int c = exec(fptr,5, argv);
+	int b = exec(fptr2,-1, null);
+	int c = exec(fptr2,5, argv);
 
 	join(a,null);
 	join(b,null);
