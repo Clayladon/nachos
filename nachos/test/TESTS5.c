@@ -10,19 +10,19 @@ int main(){
 	char *fptrA = &fnameA[0];
 	char *fptrB = &fnameB[0];
 	
-	int *ar;
-	int a = exec(fptrA,0,null);
+//	int *ar;
+//	int a = exec(fptrA,0,null);
 	
 	int b = exec(fptrB,1, &a);
 	int *br;
 
 	
-	join(a, ar);
+//	join(a, ar);
 	join(b, br);
 
-	printf("A's PID: %d\n", a);
+//	printf("A's PID: %d\n", a);
 	printf("B's PID: %d\n", b);
-	printf("A's Return Code: %d\nB's Return Code: %d\n", *ar, *br);
+	printf("B's Return Code: %d\n", *br);
 	
 	return 0;
 }
