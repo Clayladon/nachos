@@ -13,10 +13,9 @@ int main(){
 //	int *ar;
 //	int a = exec(fptrA,0,null);
 	char a = 12;
-	char args[1] = {'0'};
-	args[0] = a;
-	char *argsPtr = &args[0];	
-	int b = exec(fptrB,1, argsPtr);
+	char *args[];
+	args[0] = &a;
+	int b = exec(fptrB,1, args);
 	int *br;
 
 	
