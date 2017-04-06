@@ -536,47 +536,69 @@ public class UserProcess {
     	
 		//If the file was opened successfully
 		if(localFileArray[localFileIndex] != null){
+			//And the file wasn't found
 			if(globalFileIndex == -1)	
+				//Create the file in the globalFileRefArray
     			globalFileRefArray[nullIndex] = new FileReference(fileName);
+			//Finally return the index of the file in the local array
 			return localFileIndex;
 		}
+		//If the file wasn't opened successfully return -1
 		else
 			return -1;
     }		
     
     /**
-     * TODO comments
+     * This method is responsible for handling the read system call. It starts by
+     * validating the address of the buffer; and validating the fileIndex. Then it
+     * creates a byte array to store the bytes that will be read. It reads the bytes
+     * from the file and stores the amount of bytes read into bytesRead; it then writes
+     * the data into the buffer pointed to by bufferPtr. This method returns the amount
+     * of bytes successfully read.
      */
     public int handleRead(int fileIndex, int bufferPtr, int size){
+    	//Validate the address and file index
     	addressChecker(bufferPtr);
     	if(fileIndex < 0 || fileIndex > 15 || localFileArray[fileIndex] == null)
     		return -1;
     	
+    	//Create the temporary data storage
     	byte[] storage = new byte[size];
     
+    	//Read the data from the file and store
     	int bytesRead = localFileArray[fileIndex].read(storage, 0, size);
        	if(bytesRead == -1)
     		return -1;
+    	//Write from storage into the buffer pointed to by bufferPtr
     	int bytesWritten = writeVirtualMemory(bufferPtr, storage, 0, bytesRead);
     	if(bytesWritten != bytesRead)
     		return -1;
     		
+    	//Return the amount of bytes read
     	return bytesRead;
     }
     
     /**
-     * TODO comments
+     * This method is responsible for handling the write system call. It operates
+     * very similarly to handleOpen; but reads from the buffer and writes to the file
+     * as opposed to handleRead which does the opposite. This method returns the amount
+     * of bytes successfully written to file.
      */
     public int handleWrite(int fileIndex, int bufferPtr, int size){
+    	//Validate the address and file index
     	addressChecker(bufferPtr);
     	if(fileIndex < 0 || fileIndex > 15 || localFileArray[fileIndex] == null)
     		return -1;
     		
+    	//Create the temporary data storage
     	byte[] storage = new byte[size];
     	
+    	//Read the data from the buffer and store
     	int bytesRead = readVirtualMemory(bufferPtr, storage, 0, size);
+    	//Write from storage into the file
     	int bytesWritten = localFileArray[fileIndex].write(storage, 0, bytesRead);
     	
+    	//Return the amount of bytes 
     	return bytesWritten;
     }
     
