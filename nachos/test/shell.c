@@ -4,9 +4,13 @@
 
 int main(){
 
-	int a;
+	char programName[256];
+	char *fptr = &programName[0];
+	read(0,fptr,256);
 
-	scanf("%d", &a);
-	printf("\n%d\n",a);
+
+	int x = exec(fptr, 0, null);
+	int xr*;
+	join(x, xr);
 	return 0; 
 }
