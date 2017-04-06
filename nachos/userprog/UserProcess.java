@@ -40,7 +40,8 @@ public class UserProcess {
 		globalFileRefArray[0] = new FileReference(localFileArray[0].getName());
 		globalFileRefArray[1] = new FileReference(localFileArray[1].getName());
     
-    
+	 
+	System.out.println("PROCESS ID ======> " + processID);
     	//Task 2
     	memoryLock = new Lock();
 	
@@ -78,6 +79,7 @@ public class UserProcess {
 	new UThread(this).setName(name).fork();
 
 	return true;
+
     }
 
     /**
@@ -646,7 +648,7 @@ public class UserProcess {
      * TODO comments
      */
     public int handleExec(int fileNamePtr, int argc, int argvPtr){
-    	int[] arguPtrs = new int[argc];
+    	int[] argPtrs = new int[argc];
     	
     	String fileName = readVirtualMemoryString(fileNamePtr, 256);
     	if(fileName == null || !fileName.endsWith(".coff"))
@@ -655,24 +657,24 @@ public class UserProcess {
     	for(int i=0; i<argc; i++){
     		byte[] size = new byte[4];
     		readVirtualMemory(argvPtr + i * 4, size, 0, 4);
-    		arguPtrs[i] = Lib.bytesToInt(size, 0);
+    		argPtrs[i] = Lib.bytesToInt(size, 0);
     	}
     	
-    	String[] argus = new String[argc];
+    	String[] args = new String[argc];
     	
     	for(int i=0; i<argc; i++){
-    		byte[] fileNames = new byte[256];
-    		readVirtualMemory(arguPtrs[i], fileNames, 0, 256);
-    		argus[i] = new String(fileNames);
+    		byte[] argument = new byte[256];
+    		readVirtualMemory(argPtrs[i], argument, 0, 256);
+    		args[i] = new String(argument);
     	}
     	
-    	UserProcess createChild = new UserProcess();
-    	createChild.parent = this;
-    	children.put(createChild.processID, new ChildProcess(createChild));
+    	UserProcess Child = new UserProcess();
+    	Child.parent = this;
+    	children.put(Child.processID, new ChildProcess(Child));
     	
-    	createChild.execute(fileName, argus);
+    	Child.execute(fileName, args);
     	
-    	return createChild.processID;
+    	return Child.processID;
     }
     
     /**

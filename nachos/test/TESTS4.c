@@ -8,8 +8,9 @@ int main(){
 	char fname[] = {'h','e','l','l','o','.','c','o','f','f','\0'};
 	char *fptr = &fname[0];
 	int num = exec(fptr,0,null);
+	int x = exec(fptr,0,null);
+	int y = exec(fptr,0,null);
 	
-	exit(0);
 
 	return 0;
 }
