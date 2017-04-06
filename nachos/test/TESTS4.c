@@ -9,6 +9,7 @@ int main(){
 	char *fptr = &fname[0];
 	
 	int *ar;
+	printf("Exec hello.coff\n");
 	int a = exec(fptr,0,null);
 	join(a, ar);
 	
