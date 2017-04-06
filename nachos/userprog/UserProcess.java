@@ -40,7 +40,7 @@ public class UserProcess {
 		globalFileRefArray[0] = new FileReference(localFileArray[0].getName());
 		globalFileRefArray[1] = new FileReference(localFileArray[1].getName());
     
-    
+	 
     	//Task 2
     	memoryLock = new Lock();
 	
@@ -78,6 +78,7 @@ public class UserProcess {
 	new UThread(this).setName(name).fork();
 
 	return true;
+
     }
 
     /**
@@ -457,7 +458,6 @@ public class UserProcess {
 			return 0;
 		}
 	
-	Lib.assertNotReached("Machine.halt() did not halt machine!");
 	return 1;
     }
     
@@ -513,11 +513,8 @@ public class UserProcess {
     		if(!globalFileRefArray[globalFileIndex].markedForDeath)
     			//Increment its references
     			globalFileRefArray[globalFileIndex].numReferences++;
-    		
-				System.out.println("#FileRefs to: " + fileName + " is : " 
-						+ globalFileRefArray[globalFileIndex].numReferences);	
+    	
 		}
-		//If the file was not found, ensure that there is free space in the global array
        	else{
     		if(nullIndex == -1)
     			//If there is no space return -1
@@ -557,14 +554,10 @@ public class UserProcess {
     	
     	byte[] storage = new byte[size];
     
-	System.out.println( fileIndex + " Before openFile.read");	
     	int bytesRead = localFileArray[fileIndex].read(storage, 0, size);
-	System.out.println("\n\n" + bytesRead + " Made it past openFile.read");
        	if(bytesRead == -1)
     		return -1;
-    	System.out.println("Size passed to wVM: " + size);
     	int bytesWritten = writeVirtualMemory(bufferPtr, storage, 0, bytesRead);
-	System.out.println("\n\nMade it past writeVirtualMemory: " + bytesWritten);
     	if(bytesWritten != bytesRead)
     		return -1;
     		
@@ -612,18 +605,14 @@ public class UserProcess {
 
 	if(!isUnlinking){
     		fileName = localFileArray[fileIndex].getName();
-		System.out.println("Trying to close: " + fileName);
     		localFileArray[fileIndex].close();
     		localFileArray[fileIndex] = null;
 	}
 	else{
-		System.out.println("About to unlink");
     		fileName = readVirtualMemoryString(fileIndex, 256);
-		System.out.println("Trying to Unlink: " + fileName);
 		for(int i = 0; i < localFileArray.length; ++i){
 			if(localFileArray[i] != null){
 				if(localFileArray[i].getName().equals(fileName)){
-					System.out.println("Closing local file");
 					localFileArray[i].close();
 					localFileArray[i] = null;
 				}
@@ -639,16 +628,13 @@ public class UserProcess {
     				globalFileIndex = index;
 		}
 	}
-    	System.out.println("GlobalFileIndex: " + globalFileIndex);
     	if(globalFileIndex == -1)
     		return -1;
     	
-    	System.out.println("#FileRefs to: " + fileName + " is : " + globalFileRefArray[globalFileIndex].numReferences);	
     	if(isUnlinking)
     		globalFileRefArray[globalFileIndex].markedForDeath = true;
     		
     	globalFileRefArray[globalFileIndex].numReferences--;
-    	System.out.println("#FileRefs to: " + fileName + " is : " + globalFileRefArray[globalFileIndex].numReferences);	
     	
     	if(globalFileRefArray[globalFileIndex].numReferences == 0){
     		if(globalFileRefArray[globalFileIndex].markedForDeath){
@@ -665,33 +651,34 @@ public class UserProcess {
      * TODO comments
      */
     public int handleExec(int fileNamePtr, int argc, int argvPtr){
-    	int[] arguPtrs = new int[argc];
     	
     	String fileName = readVirtualMemoryString(fileNamePtr, 256);
-    	if(fileName == null || !fileName.endsWith(".coff"))
+    	if(fileName == null || !fileName.endsWith(".coff") || argc < 0)
     		return -1;
     	
+	int[] argPtrs = new int[argc];
+
     	for(int i=0; i<argc; i++){
     		byte[] size = new byte[4];
     		readVirtualMemory(argvPtr + i * 4, size, 0, 4);
-    		arguPtrs[i] = Lib.bytesToInt(size, 0);
+    		argPtrs[i] = Lib.bytesToInt(size, 0);
     	}
     	
-    	String[] argus = new String[argc];
+    	String[] args = new String[argc];
     	
     	for(int i=0; i<argc; i++){
-    		byte[] fileNames = new byte[256];
-    		readVirtualMemory(arguPtrs[i], fileNames, 0, 256);
-    		argus[i] = new String(fileNames);
+    		byte[] argument = new byte[256];
+    		readVirtualMemory(argPtrs[i], argument, 0, 256);
+    		args[i] = new String(argument);
     	}
     	
-    	UserProcess createChild = new UserProcess();
-    	createChild.parent = this;
-    	children.put(createChild.processID, new ChildProcess(createChild));
+    	UserProcess Child = new UserProcess();
+    	Child.parent = this;
+    	children.put(Child.processID, new ChildProcess(Child));
     	
-    	createChild.execute(fileName, argus);
+    	Child.execute(fileName, args);
     	
-    	return createChild.processID;
+    	return Child.processID;
     }
     
     /**
@@ -730,7 +717,7 @@ public class UserProcess {
     	joinLock.acquire();
     	
     	if(parent != null){
-    		parent.children.get(processID).returnValue = status;
+    		(parent.children.get(processID)).returnValue = status;
     		parent.children.get(processID).process = null;
     	}
     	
@@ -927,7 +914,7 @@ public class UserProcess {
     private static final char dbgProcess = 'a';
     
     //Task 1 variables
-    private static int numProcesses;
+    private static int numProcesses = 0;
     public int processID;
     
     OpenFile[] localFileArray;

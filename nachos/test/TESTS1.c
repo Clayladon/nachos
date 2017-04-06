@@ -9,6 +9,8 @@ int main(){
 
 	//Imaginary is not an existing file
 	int fd = open(fptr);
+
+	printf("Attempt at opening non-existent file: \n\tFile Descriptor: %d\n\n", fd);
 	
 	if(fd != -1){
 		printf("Failure1\n");
@@ -17,6 +19,7 @@ int main(){
 
 	//Create Imaginary
 	fd = creat(fptr);
+	printf("Attempt at creating non-existent file: \n\tFile Descriptor: %d\n\n", fd);
 
 	if(fd == -1){
 		printf("Failure2\n");
@@ -25,17 +28,31 @@ int main(){
 
 	//Open Imaginary, should open a second reference to fptr
 	int ofd = open(fptr);
-	printf("fd = %d\nofd = %d\n", fd, ofd);
-
-	//Close ofd and unlink fd/ Close both instances of the OpenFile
-	int cls = close(ofd);
-
-	printf("cls: %d\n" , cls);
-
-	int unlk = unlink(fptr);
-	printf("unlink: %d\n" , unlk);
+	printf("Attempt at opening existing file: \n\tFile Descriptor: %d\n\n", ofd);
 
 
+	// Create Imaginary, should open a third reference to fptr
+	int cfd = creat(fptr);
+	printf("Attempt at creating existing file: \n\tFile Descriptor: %d\n\n", cfd);
+
+	int i; 
+	printf("\nOpen max amount of files\n\n");	
+	for(i = 2; i < 13; ++i){
+		printf("File Descriptor: %d\n", open(fptr));
+	}	
+
+	
+
+	// Test unlink and close
+	printf("\n Close remaining files\n");
+	for(i = 2; i < 15; ++i){
+		close(i);
+		printf("Closing File Descriptor: %d\n", i);
+
+	
+	}
+	unlink(fptr);
+	printf("unlinking: Imaginary");
 
 	//Imaginary should no longer be in the FileSystem
 	int status = open(fptr);
@@ -43,10 +60,13 @@ int main(){
 	//If status = -1, then Imaginary does not exist which is
 	//the desired outcome
 
-	if(status != -1)
+	if(status != -1){
 		printf("Failure3\n");
 		exit(0);
-
+	}
+	else{
+		printf("\nTest 1 - PASS \n");
+	}
 
 
 	return 0;

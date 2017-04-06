@@ -7,7 +7,11 @@ int main(){
 
 	char fname[] = {'h','e','l','l','o','.','c','o','f','f','\0'};
 	char *fptr = &fname[0];
-	int num = exec(fptr,0,null);
+	
+	int *ar;
+	printf("Exec hello.coff\n");
+	int a = exec(fptr,0,null);
+	join(a, ar);
 	
 	return 0;
 }
