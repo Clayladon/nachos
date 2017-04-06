@@ -28,16 +28,28 @@ int main(){
 
 	//Open Imaginary, should open a second reference to fptr
 	int ofd = open(fptr);
-	printf("fd = %d\nofd = %d\n", fd, ofd);
+	printf("Attempt at opening existing file: \n\tFile Descriptor: %d\n\n", ofd);
 
-	//Close ofd and unlink fd/ Close both instances of the OpenFile
-	int cls = close(ofd);
 
-	printf("cls: %d\n" , cls);
+	// Create Imaginary, should open a third reference to fptr
+	int cfd = creat(fptr);
+	printf("Attempt at creating existing file: \n\tFile Descriptor: %d\n\n", cfd);
 
-	int unlk = unlink(fptr);
-	printf("unlink: %d\n" , unlk);
+	//Fill up local file array and try to overfill
+	int i; 
+	printf("\nOpen max amount of files\n\n");	
+	for(i = 0; i < 17; ++i){
+		printf("File Descriptor: %d\n", open(fptr));
+	}	
 
+	
+
+	// Test unlink and close
+	unlink(fptr);
+	for(i = 2; i < 16; ++i){
+		printf("Closing File Descriptor: %d\n", close(i));
+
+	}
 
 
 	//Imaginary should no longer be in the FileSystem
@@ -46,10 +58,13 @@ int main(){
 	//If status = -1, then Imaginary does not exist which is
 	//the desired outcome
 
-	if(status != -1)
+	if(status != -1){
 		printf("Failure3\n");
 		exit(0);
-
+	}
+	else{
+		printf("\nTest 1 - PASS \n");
+	}
 
 
 	return 0;
