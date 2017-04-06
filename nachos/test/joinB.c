@@ -8,7 +8,7 @@ int main(int argc, char *argv[]){
 
 	printf("B attempting to join non-child process A\n");
 
-	printf("A's supposed PID: %d\n", (int)(argument - '0'));
+	printf("A's supposed PID: %d\n", (int)(argument));
 	join((int)(argument - '0'),null);
 	exit(127);
 	return 0;
