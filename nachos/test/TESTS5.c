@@ -10,7 +10,9 @@ int main(){
 	char *fptrA = &fnameA[0];
 	char *fptrB = &fnameB[0];
 	
-	int *ar;
+	int statusA;
+	int statusB;
+	int *ar = &statusA;
 	int aPID = exec(fptrA,0,null);
 	
 	char a = (char)aPID;
@@ -18,7 +20,7 @@ int main(){
 	args[0] = &a;
 
 	int bPID = exec(fptrB,1, args);
-	int *br;
+	int *br = &statusB;
 
 	
 	join(bPID, br);
@@ -26,7 +28,7 @@ int main(){
 
 	printf("A's PID: %d\n", aPID);
 	printf("B's PID: %d\n", bPID);
-	printf("B's Return Code: %d\n", *br);
+	printf("A's Return Code: %d\nB's Return Code: %d\n",*ar, *br);
 	
 	return 0;
 }
