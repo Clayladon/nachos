@@ -3,9 +3,9 @@
 #include "syscall.h"
 
 int main(int argc, char *argv[]){
-
-	int n;
-	for(int i = 0; i < 5000; ++i){
+	
+	int n, i;
+	for(i = 0; i < 5000; ++i){
 
 		n = (i+3)/5 * 123;
 	}
