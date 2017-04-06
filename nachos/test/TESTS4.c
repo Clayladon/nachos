@@ -10,14 +10,15 @@ int main(){
 	
 	int *ar;
 	int a = exec(fptr,0,null);
-	join(a, ar);
 
 	int *br;
 	int b = exec(fptr,0,null);
-	join(b, br);
 	
 	int *cr;
 	int c = exec(fptr,0,null);
+	
+	join(a, ar);
+	join(b, br);
 	join(c, cr);
 	
 	return 0;
