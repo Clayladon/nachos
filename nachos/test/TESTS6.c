@@ -5,7 +5,7 @@
 int main(){
 
 	char fileName[] = "Imaginary";
-	char *fptr = fileName[0];
+	char *fptr = &fileName[0];
 	
 	char *argv[3] = {};
 	printf("Trying to Exec non existent file: %d\n", exec(fptr,0,null));
