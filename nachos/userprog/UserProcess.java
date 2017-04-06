@@ -441,7 +441,10 @@ public class UserProcess {
     }
 
 	/**
-     * TODO comments
+     * This method ensures the validity of memory addresses. It does this
+     * by making sure that addr is located within defined memory. If addr
+     * is located on an invalid page handleExit is called with an exit code
+     * of -1
      */
 	public void addressChecker(int addr){
 		int pageNum = Processor.pageFromAddress(addr);
@@ -462,14 +465,18 @@ public class UserProcess {
     }
     
     /**
-     * TODO comments
+     * This method is responsible for handling the creat system call. It
+     * accomplishes this by calling the openFile method and passing true
+     * as the isCreating boolean
      */
     private int handleCreate(int fileNamePtr){
     	return openFile(fileNamePtr, true);
     }
     
     /**
-     * TODO comments
+     * This method is responsible for handling the open system call. It
+     * accomplishes this by calling the openFile method and passing false
+     * as the isCreating boolean
      */
     private int handleOpen(int fileNamePtr){
     	return openFile(fileNamePtr, false);
@@ -603,89 +610,123 @@ public class UserProcess {
     }
     
     /**
-     * TODO comments
+     * This method is responsible for handling the close system call. It accomplishes this by
+     * calling the closeFile method and passing a false as the isUnlinking boolean.
      */
     public int handleClose(int fileIndex){
     	return closeFile(fileIndex, false);
     }
     
     /**
-     * TODO comments
+     * This method is responsible for handling the unlink system call. It accomplishes this by
+     * calling the closeFile method and passing a true as the isUnlinking boolean.
      */
     public int handleUnlink(int fileNamePtr){
     	return closeFile(fileNamePtr, true);
     }
     
     /**
-     * TODO comments
+     * This method takes advantage of the similarities between closing and unlinking files.
+     * The method starts by validating the file index and setting a variable to store the 
+     * file name. If the method is simply closing then the name of the file is stored and
+     * the file is closed and removed from the local file array. If the method is unlinking
+     * the file name is stored and the file is found in the local array and closed and removed.
+     * Once this process is done the file is found in the global array and marked for unlinking
+     * if the isUnlinking boolean is set. The number of references to the file is decremented
+     * The file is then checked for removal from the global array if it is set for unlinking
+     * and the number of references to the file is 0. Finally the method returns 0 if everything
+     * was successful.
      */
-    public int closeFile(int fileIndex, boolean isUnlinking){
+    public int closeFile(int fileIndex, boolean isUnlinking){	
+    	//Validate the file index
     	if((fileIndex < 0 || fileIndex > 15 || localFileArray[fileIndex] == null) && !isUnlinking)
     		return -1;
     	
-	String fileName = null;
-
-	if(!isUnlinking){
+    	//Set a string to store the file name
+		String fileName = null;
+	
+		//If the method was called from handleUnlink	
+		if(!isUnlinking){
+			//Store the file name, close the file, and remove it from the local file array
     		fileName = localFileArray[fileIndex].getName();
     		localFileArray[fileIndex].close();
     		localFileArray[fileIndex] = null;
-	}
-	else{
+		}
+		//If the method was called from handleClose
+		else{
+			//Store the file name, close all instances of the file
     		fileName = readVirtualMemoryString(fileIndex, 256);
-		for(int i = 0; i < localFileArray.length; ++i){
-			if(localFileArray[i] != null){
-				if(localFileArray[i].getName().equals(fileName)){
-					localFileArray[i].close();
-					localFileArray[i] = null;
+			for(int i = 0; i < localFileArray.length; ++i){
+				if(localFileArray[i] != null){
+					if(localFileArray[i].getName().equals(fileName)){
+						localFileArray[i].close();
+						//And remove them from the local file array
+						localFileArray[i] = null;
+					}
 				}
 			}
 		}
-	}
-    	
     	
     	int globalFileIndex = -1;
+    	//Iterate through the global file array and store the location of the file
     	for(int index = 0; index < globalFileRefArray.length; index++){
-		if(globalFileRefArray[index] != null){
+			if(globalFileRefArray[index] != null){
     			if(globalFileRefArray[index].fileName.equals(fileName))
     				globalFileIndex = index;
+			}
 		}
-	}
     	if(globalFileIndex == -1)
     		return -1;
     	
+    	//If the method was called from handleUnlink
     	if(isUnlinking)
+    		//Set the file to be unlinked when possible
     		globalFileRefArray[globalFileIndex].markedForDeath = true;
-    		
+    	
+    	//Decrement the number of references to the file
     	globalFileRefArray[globalFileIndex].numReferences--;
     	
+    	//If the references are 0 and the file is marked to be unlinked
     	if(globalFileRefArray[globalFileIndex].numReferences == 0){
     		if(globalFileRefArray[globalFileIndex].markedForDeath){
     			if(!UserKernel.fileSystem.remove(fileName))
     				return -1; 
+    			//Remove it from the global file array
     			globalFileRefArray[globalFileIndex] = null;
     		}
     	}
     	
+    	//Return 0 to indicate a successful operation
     	return 0;
     }
     
     /**
-     * TODO comments
+     * This method is responsible for handling the exec system call. It accomplishes 
+     * this by first validating the file name and argument counter. Next it looks at
+     * the argvPtrs, at it gives them their appropriate sizes. Once this is done it 
+     * goes through and makes newly sized arguments into Strings that can be read and
+     * executed. Lastly the method creates a new child process by calling UserProcess.
+     * The child knows who its parent is since it is assigned to the current process,
+     * it then places createChild into the HashMap. After this is completed the method
+     * returns the processID of the child
      */
     public int handleExec(int fileNamePtr, int argc, int argvPtr){
-    	
+    	//Validate the file name and argument count
     	String fileName = readVirtualMemoryString(fileNamePtr, 256);
     	if(fileName == null || !fileName.endsWith(".coff") || argc < 0)
     		return -1;
     	
-	int[] argPtrs = new int[argc];
+    	//Create an array to store the arguments
+		int[] argPtrs = new int[argc];
 
+		//Iterate through the arguments and store them in argPtrs
     	for(int i=0; i<argc; i++){
     		byte[] size = new byte[4];
     		readVirtualMemory(argvPtr + i * 4, size, 0, 4);
     		argPtrs[i] = Lib.bytesToInt(size, 0);
     	}
     	
+    	//Convert the arguments into Strings that can be processed
     	String[] args = new String[argc];
     	
     	for(int i=0; i<argc; i++){
@@ -694,73 +735,111 @@ public class UserProcess {
     		args[i] = new String(argument);
     	}
     	
+    	//Create a new process and give it its parent
     	UserProcess Child = new UserProcess();
     	Child.parent = this;
+    	
+    	//Store the child in this process' children array
     	children.put(Child.processID, new ChildProcess(Child));
     	
+    	//Execute the child with the appropriate file name and arguments
     	Child.execute(fileName, args);
     	
+    	//Return the child's processID
     	return Child.processID;
     }
     
     /**
-     * TODO comments
+     * First the method will grab the child from the current list of children; if the
+     * child is not found it will retrun -1. Then it will call the joinProcess method.
+     * After this it will remove the child from children since that process has returned
+     * and it will write the appropriate data into virtual memory. This method returns 1
+     * if the join is a success.
      */
     public int handleJoin(int processID, int statusPtr){
-
+		//Create a childProcess object from an existing child UserProcess
     	ChildProcess child = children.get(processID);
     	if(child == null)
     		return -1;
     	
+    	//If the process is not null join it via joinProcess
     	if(child.process != null)
     		child.process.joinProcess();
-    		
+    	
+    	//Remove the child in question from the list of active children
     	children.remove(processID);
     	
+    	//Write the child's return value into the status pointer
     	writeVirtualMemory(statusPtr, Lib.bytesFromInt(child.returnValue));
-    	
+    
+    	//Return 1 on a successful operation	
     	return 1;
     }
     
     /**
-     * TODO comments
+     * This method acquires the joinLock then checks the exit boolean, initially set to
+     * false, and while it's false it puts the current thread to sleep on the Condition
+     * variable's waitQueue, then it releases the lock. This ensures that the processes
+     * stay synchronized and then wake up when handleExit is called.
      */
     public void joinProcess(){
+    	//Acquire the lock
     	joinLock.acquire();
+		
+		//While the hasExited variable has not been changed
     	while(!hasExited)
+    		//Put the processes waiting to join to sleep
     		waitingToJoin.sleep();
+    	//Release the lock
     	joinLock.release();
     }
     
     /**
-     * TODO comments
+     * This method is responsible for handling the exit syscall. It accomplishes this
+     * by first acquiring the joinLock. If the process has a parent, it is notified that
+     * the child is going to exit, so it will not attempt to join later on. It will then
+     * go through each child in the HashMap, and disown it by making the parent null.
+     * It will then set the HashMap to null as well, since it is no longer being used.
+     * Next it loops through all the open files and closes them, releasing their references
+     * by calling the handleClose method. It will also go through the waitingToJoin 
+     * Condition, waking up any processes that were asleep. Once this is complete the
+     * unloadSections is used to release the virtual memory, and release the lock.
      */
     public int handleExit(int status){
+    	//Acquire the joinLock
     	joinLock.acquire();
     	
+    	//If the process has a parent, notify it that this process is exiting
     	if(parent != null){
     		(parent.children.get(processID)).returnValue = status;
     		parent.children.get(processID).process = null;
     	}
     	
+    	//Iterate through this process' children and notify them they have no parent
     	for(int i=0; i<children.size(); ++i)
     		if(children.get(i).process != null)
     			children.get(i).process.parent = null;
     			
+    	//Set the children array to null
     	children = null;
     	
+    	//Close all open files
     	for(int i=2; i<localFileArray.length; ++i)
     		handleClose(i);
     		
+    	//Wake all sleeping processes and set hasExited to true
     	hasExited = true;
     	waitingToJoin.wakeAll();
     	
     	unloadSections();
     	
+    	//Release the lock	
     	joinLock.release();
     	
+    	//Halt the system if this is processID 0
     	handleHalt();
     	
+    	//Finish the current thread and return 0 for a successful operation
     	KThread.finish();
     	return 0;
     }
