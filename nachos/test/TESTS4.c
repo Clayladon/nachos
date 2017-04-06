@@ -7,10 +7,18 @@ int main(){
 
 	char fname[] = {'h','e','l','l','o','.','c','o','f','f','\0'};
 	char *fptr = &fname[0];
-	int num = exec(fptr,0,null);
-	int x = exec(fptr,0,null);
-	int y = exec(fptr,0,null);
 	
+	int *ar;
+	int a = exec(fptr,0,null);
+	join(a, ar);
 
+	int *br;
+	int b = exec(fptr,0,null);
+	join(b, br);
+	
+	int *cr;
+	int c = exec(fptr,0,null);
+	join(c, cr);
+	
 	return 0;
 }
