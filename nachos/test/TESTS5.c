@@ -10,20 +10,21 @@ int main(){
 	char *fptrA = &fnameA[0];
 	char *fptrB = &fnameB[0];
 	
-//	int *ar;
-//	int a = exec(fptrA,0,null);
-	char a = 12;
+	int *ar;
+	int aPID = exec(fptrA,0,null);
+	char a = (char)aPID;
 	char *args[1];
 	args[0] = &a;
-	int b = exec(fptrB,1, args);
+
+	int bPID = exec(fptrB,1, args);
 	int *br;
 
 	
-//	join(a, ar);
-	join(b, br);
+	join(aPID, ar);
+	join(bPID, br);
 
-//	printf("A's PID: %d\n", a);
-	printf("B's PID: %d\n", b);
+	printf("A's PID: %d\n", aPID);
+	printf("B's PID: %d\n", bPID);
 	printf("B's Return Code: %d\n", *br);
 	
 	return 0;
