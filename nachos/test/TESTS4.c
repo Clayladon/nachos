@@ -11,15 +11,6 @@ int main(){
 	int *ar;
 	int a = exec(fptr,0,null);
 
-	int *br;
-	int b = exec(fptr,0,null);
-	
-	int *cr;
-	int c = exec(fptr,0,null);
-	
-	join(a, ar);
-	join(b, br);
-	join(c, cr);
 	
 	return 0;
 }

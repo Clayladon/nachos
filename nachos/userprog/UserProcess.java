@@ -910,7 +910,7 @@ public class UserProcess {
     private static final char dbgProcess = 'a';
     
     //Task 1 variables
-    private static int numProcesses;
+    private static int numProcesses = 1;
     public int processID;
     
     OpenFile[] localFileArray;

@@ -115,12 +115,14 @@ public class UserKernel extends ThreadedKernel {
      */
     public void run() {
 	super.run();
+	
 
 	UserProcess process = UserProcess.newUserProcess();
+	process.processID = 0;
 
 	String shellProgram = Machine.getShellProgramName();	
 	Lib.assertTrue(process.execute(shellProgram, new String[] { }));
-
+	
 	KThread.currentThread().finish();
     }
 
