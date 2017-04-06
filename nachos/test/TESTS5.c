@@ -12,7 +12,7 @@ int main(){
 	
 //	int *ar;
 //	int a = exec(fptrA,0,null);
-	
+	int a = 1;	
 	int b = exec(fptrB,1, &a);
 	int *br;
 
