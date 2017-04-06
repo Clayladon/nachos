@@ -10,7 +10,7 @@ int main(){
 
 
 	int x = exec(fptr, 0, null);
-	int xr*;
+	int *xr;
 	join(x, xr);
 	return 0; 
 }
