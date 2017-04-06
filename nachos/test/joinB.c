@@ -4,9 +4,9 @@
 
 int main(int argc, char *argv[]){
 
-	int a = (int)argv[0];
+	char a = argv[0];
 
-	printf("B join A attempt: join(%d, r)\n", a);
+	printf("B join A attempt: join(%c, r)\n", a);
 	int *r = join(a, r);
 
 	exit(127);

@@ -20,7 +20,8 @@ int main(){
 	join(a, ar);
 	join(b, br);
 
-
+	printf("A's PID: %d\n", a);
+	printf("B's PID: %d\n", b);
 	printf("A's Return Code: %d\nB's Return Code: %d\n", *ar, *br);
 	
 	return 0;
