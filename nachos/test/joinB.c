@@ -6,7 +6,8 @@ int main(int argc, char *argv[]){
 
 	char argument = *argv[0];
 
-	printf("Argument: %d\n", argument);
+	printf("B attempting to join non-child process A\n");
+	join((int)(argument - '0'),null);
 	exit(127);
 	return 0;
 }
